@@ -18,5 +18,9 @@ ADD CONSTRAINT fk_product_refs_company
 FOREIGN KEY (company_id) REFERENCES company(facebook_id) 
 ON DELETE CASCADE;
 
-
-
+CREATE TABLE users
+(
+facebook_id int NOT NULL,
+login varchar(255) NOT NULL,
+CONSTRAINT pk_users_facebook_id PRIMARY KEY (facebook_id)
+);
