@@ -65,9 +65,9 @@ public class UsersDAO implements DatabaseAccessObject<Users>{
 	}
 
 	@Override
-	public Users get(Integer id) throws SQLException {
+	public Users get(Users data) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(READ_USERS_FOR_ID_CMD);
-		stmt.setInt(1, id);
+		stmt.setInt(1, data.getFacebookId());
 		ResultSet rs = stmt.executeQuery();
 		
 		rs.next();
@@ -92,19 +92,19 @@ public class UsersDAO implements DatabaseAccessObject<Users>{
 	}
 
 	@Override
-	public void update(Integer id, Users data) throws SQLException {
+	public void update(Users oldData, Users newData) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(UPDATE_USERS_CMD);
-		stmt.setInt(1, data.getFacebookId());
-		stmt.setString(2, data.getLogin());
-		stmt.setInt(3, id);
+		stmt.setInt(1, newData.getFacebookId());
+		stmt.setString(2, newData.getLogin());
+		stmt.setInt(3, oldData.getFacebookId());
 		stmt.executeUpdate();
 		stmt.close();
 	}
 
 	@Override
-	public void delete(Integer id) throws SQLException {
+	public void delete(Users data) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(DELETE_USERS_CMD);
-		stmt.setInt(1, id);
+		stmt.setInt(1, data.getFacebookId());
 		stmt.executeUpdate();
 		stmt.close();
 	}
