@@ -17,6 +17,7 @@ public class Test {
 
 	FacebookClient fb = new FacebookClient();
 	
+	
 	/**
 	 * This function gets called by default.  Since our service
 	 * will return JSON we set that with the @Produces annotation.
