@@ -88,7 +88,7 @@ public class CompanyDAO implements DatabaseAccessObject<Company>{
 		stmt.setInt(1, data.getFacebookId());
 		stmt.setString(2, data.getName());
 		stmt.executeUpdate();
-		stmt.close();
+		stmt.close(); 
 	}
 
 	@Override
