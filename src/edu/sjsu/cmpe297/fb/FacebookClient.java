@@ -2,11 +2,18 @@ package edu.sjsu.cmpe297.fb;
 /**
  * Engine to make calls using the Facebook Open Graph API
  */
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONObject;
+
+import edu.sjsu.cmpe297.fb.OpenGraphUser;
 
 public class FacebookClient {
 
@@ -42,6 +49,31 @@ public class FacebookClient {
 		}
 		
 		return response;
+	}
+	
+	public List<OpenGraphUser> getFriends (String id, String token) 
+	{
+		String response = "";
+		List<OpenGraphUser> friends = new ArrayList<OpenGraphUser>();
+		
+		try {
+			HttpGet request = new HttpGet(API + String.format(API_FRIENDS, id, token));
+			response = client.execute(request, responseHandler);
+			
+			System.out.println("response = " + response);
+			
+			JSONObject json = new JSONObject(response);
+			JSONArray array = json.getJSONArray("data");
+			
+			for (int i = 0; i < array.length(); i++) {
+				OpenGraphUser friend = new OpenGraphUser(array.getString(i));
+				friends.add(friend);
+			}
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+		
+		return friends;
 	}
 
 	protected String getLikes(String id, String token)
