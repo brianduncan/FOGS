@@ -1,24 +1,33 @@
-package edu.sjsu.cmpe297;
+package edu.sjsu.cmpe297.fb;
 /**
  * Object to represent a Facebook User
  */
 import org.codehaus.jettison.json.JSONObject;
 
+import edu.sjsu.cmpe297.fb.FacebookClient;
+
 public class OpenGraphUser {
 
 	private String json;
 	private JSONObject obj;
+	private String accessToken;
+	
+	private FacebookClient client;
+	private OpenGraphLikes userLikes;
 	
 	/**
 	 * Creates a new instance of a Facebook user from the 
-	 * passed in JSON string.
+	 * passed in id string. 
 	 * 
-	 * @param json
+	 * @param id
 	 * @throws Exception
 	 */
-	public OpenGraphUser(String json) throws Exception
+	public OpenGraphUser(String id) throws Exception
 	{
-		this.json = json;
+		client = new FacebookClient();
+		accessToken = "";
+		
+		json = client.getUser(id);
 		obj = new JSONObject(json);
 	}
 	
@@ -65,5 +74,23 @@ public class OpenGraphUser {
 	public String getLocale() throws Exception
 	{
 		return obj.getString("locale");
+	}
+	
+	public void setAccessToken(String token)
+	{
+		accessToken = token;
+	}
+	
+	private void getLikes() throws Exception
+	{	
+		userLikes = new OpenGraphLikes(client.getLikes(getId(), accessToken));
+	}
+	
+	public boolean likes(String id) throws Exception
+	{
+		if (null == userLikes)
+			getLikes();
+		
+		return userLikes.likes(id);
 	}
 }

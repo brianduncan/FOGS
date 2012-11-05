@@ -1,8 +1,7 @@
-package edu.sjsu.cmpe297;
+package edu.sjsu.cmpe297.fb;
 /**
  * Engine to make calls using the Facebook Open Graph API
  */
-import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
@@ -13,6 +12,7 @@ public class FacebookClient {
 
 	private HttpClient client;
 	private ResponseHandler<String> responseHandler;
+	private String accessToken;
 	
 	private static final String API = "https://graph.facebook.com";
 	private static final String API_FRIENDS = "/%s/friends?access_token=%s";
@@ -25,22 +25,41 @@ public class FacebookClient {
 		responseHandler = new BasicResponseHandler();
 	}
 	
-	public OpenGraphUser getUser(String username)
+	public void setAccessToken(String token)
+	{
+		accessToken = token;
+	}
+	
+	public String getUser(String id)
 	{
 		String response = "";
-		OpenGraphUser user = null;
 		
 		try {
-		    HttpGet request = new HttpGet(API + "/" + username);
+		    HttpGet request = new HttpGet(API + "/" + id);
 		    response = client.execute(request, responseHandler);
-		    
-            user = new OpenGraphUser(response);
-		    
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
 		
-		return user;
+		return response;
 	}
 
+	protected String getLikes(String id, String token)
+	{
+		String response = "";
+		String url = "";
+		
+		try {
+			url = String.format(API + API_LIKES, id, token);
+			
+		    HttpGet request = new HttpGet(url);
+		    response = client.execute(request, responseHandler);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			response = e.getMessage() + " (" + url + ")";
+		}
+		
+		return response;
+	}
+	
 }
