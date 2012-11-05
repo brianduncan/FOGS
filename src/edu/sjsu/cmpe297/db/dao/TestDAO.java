@@ -15,24 +15,24 @@ public class TestDAO {
 		
 		try {
 			//test insert
-			//Company c = new Company(2, "tester");
-			//companyDb.insert(c);
+			Company c = new Company(2, "tester");
+			companyDb.insert(c);
 			
 			//test get
-			//Company c = companyDb.get(2);
-			//System.out.println(c.getFacebookId() + " " + c.getName());
+			Company cToGet = companyDb.get(c);
+			System.out.println(cToGet.getFacebookId() + " " + cToGet.getName());
 			
 			//test update
-			//Company cToUpdate = new Company(99,"mike_company");
-			//companyDb.update(3, cToUpdate);
+			Company cToUpdate = new Company(99,"mike_company");
+			companyDb.update(cToGet, cToUpdate);
 			
 			//test delete
-			companyDb.delete(99);
+			companyDb.delete(cToUpdate);
 			
 			//test list
 			List<Company> companies = companyDb.list();
-			for (Company c : companies) {
-				System.out.println(c.getFacebookId() + " " + c.getName());
+			for (Company company : companies) {
+				System.out.println(company.getFacebookId() + " " + company.getName());
 			}
 		}
 		catch (SQLException e) {

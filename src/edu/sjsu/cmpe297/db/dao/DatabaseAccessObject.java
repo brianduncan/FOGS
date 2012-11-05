@@ -25,12 +25,12 @@ public interface DatabaseAccessObject <T extends DatabaseObject>{
 	
 	/**
 	 * 
-	 * @param id
-	 * 				The id (primary key) of the database object to get
+	 * @param data
+	 * 				The database object to get (query by its primary key)
 	 * @return The database object
 	 * @throws SQLException
 	 */
-	T get(Integer id) throws SQLException;
+	T get(T data) throws SQLException;
 	
 	/**
 	 * 
@@ -42,19 +42,19 @@ public interface DatabaseAccessObject <T extends DatabaseObject>{
 	
 	/**
 	 * 
-	 * @param id
-	 * 				The id (primary key) of the database object to update
-	 * @param data
+	 * @param oldData
+	 * 				The old database object to update (query by its primary key)
+	 * @param newData
 	 * 				The new database object to update to
 	 * @throws SQLException
 	 */
-	void update(Integer id, T data) throws SQLException;
+	void update(T oldData, T newData) throws SQLException;
 	
 	/**
 	 * 
-	 * @param id
-	 * 				The id (primary key) of the database object to delete
+	 * @param data
+	 * 				The database object to delete (query by its primary key)
 	 * @throws SQLException
 	 */
-	void delete(Integer id) throws SQLException;
+	void delete(T data) throws SQLException;
 }

@@ -65,9 +65,9 @@ public class CompanyDAO implements DatabaseAccessObject<Company>{
 	}
 
 	@Override
-	public Company get(Integer id) throws SQLException {
+	public Company get(Company data) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(READ_COMPANY_FOR_ID_CMD);
-		stmt.setInt(1, id);
+		stmt.setInt(1, data.getFacebookId());
 		ResultSet rs = stmt.executeQuery();
 		
 		rs.next();
@@ -92,19 +92,19 @@ public class CompanyDAO implements DatabaseAccessObject<Company>{
 	}
 
 	@Override
-	public void update(Integer id, Company data) throws SQLException {
+	public void update(Company oldData, Company newData) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(UPDATE_COMPANY_CMD);
-		stmt.setInt(1, data.getFacebookId());
-		stmt.setString(2, data.getName());
-		stmt.setInt(3, id);
+		stmt.setInt(1, newData.getFacebookId());
+		stmt.setString(2, newData.getName());
+		stmt.setInt(3, oldData.getFacebookId());
 		stmt.executeUpdate();
 		stmt.close();
 	}
 
 	@Override
-	public void delete(Integer id) throws SQLException {
+	public void delete(Company data) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(DELETE_COMPANY_CMD);
-		stmt.setInt(1, id);
+		stmt.setInt(1, data.getFacebookId());
 		stmt.executeUpdate();
 		stmt.close();
 	}

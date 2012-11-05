@@ -3,6 +3,8 @@
  */
 package edu.sjsu.cmpe297;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.GET;
@@ -10,6 +12,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+
+import net.sf.json.JSONObject;
+import edu.sjsu.cmpe297.db.dao.CompanyDAO;
+import edu.sjsu.cmpe297.db.object.Company;
 
 /**
  * @author rpriyad
@@ -29,12 +35,59 @@ import javax.ws.rs.core.MediaType;
 @Path("/fogs")
 public class FogsCustomerService {
 	
+	 //This method will be used to get the facebook Id for the company	
+	  @GET
+	  @Path("/compname/{facebookid}") 
+	  @Produces(MediaType.APPLICATION_JSON)
+	  public String getCompanyName(@PathParam("facebookid") String facebookid){
+		  
+		  Company comp = new Company(new Integer(facebookid), null);
+		  CompanyDAO compDAO = CompanyDAO.getInstance();
+		  try {
+			comp = compDAO.get(comp);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		  
+		  JSONObject jObj = JSONObject.fromObject(comp);
+		  
+		  return jObj.toString();
+	  }
+	  
+	  
+	//This method will be used to get the facebook Id for the company	
+	  @GET
+	  @Path("/allcomp") 
+	  @Produces(MediaType.APPLICATION_JSON)
+	  public String getCompanyName(){
+		  
+		  CompanyDAO compDAO = CompanyDAO.getInstance();
+		  JSONObject jcomps = new JSONObject();
+		  try {				
+				ArrayList<Company>  list = (ArrayList<Company>) compDAO.list();
+				
+				for(int i=0; i<list.size(); i++){
+					JSONObject jObj = new JSONObject();
+					jObj = JSONObject.fromObject(list.get(i));
+					jcomps.put(i, jObj.toString());
+					
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		  
+		  return jcomps.toString();
+		  
+	  }
+	
   //This method will be used to get the facebook Id for the company	
   @GET
   @Path("/facebookid/{compName}") 
   @Produces(MediaType.APPLICATION_JSON)
   public String getFacebookId(@PathParam("compName") String compName){
-	  return "";
+	  return "compName";
   }
   
   //This method will be used to get the products sold by the company	
