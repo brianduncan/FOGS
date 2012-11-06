@@ -2,6 +2,8 @@ package edu.sjsu.cmpe297.fb;
 /**
  * Object to represent a Facebook User
  */
+import java.util.List;
+
 import org.codehaus.jettison.json.JSONObject;
 
 import edu.sjsu.cmpe297.fb.FacebookClient;
@@ -14,6 +16,7 @@ public class OpenGraphUser {
 	
 	private FacebookClient client;
 	private OpenGraphLikes userLikes;
+	private List<OpenGraphUser> userFriends;
 	
 	/**
 	 * Creates a new instance of a Facebook user from the 
@@ -81,7 +84,7 @@ public class OpenGraphUser {
 		accessToken = token;
 	}
 	
-	private void getLikes() throws Exception
+	private void setLikes() throws Exception
 	{	
 		userLikes = new OpenGraphLikes(client.getLikes(getId(), accessToken));
 	}
@@ -89,8 +92,21 @@ public class OpenGraphUser {
 	public boolean likes(String id) throws Exception
 	{
 		if (null == userLikes)
-			getLikes();
+			setLikes();
 		
 		return userLikes.likes(id);
+	}
+	
+	private void setFriends() throws Exception
+	{
+		userFriends = client.getFriends(getId(), accessToken);
+	}
+	
+	public List<OpenGraphUser> getFriends() throws Exception
+	{
+		if (null == userFriends)
+			setFriends();
+		
+		return userFriends;
 	}
 }

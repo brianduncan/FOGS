@@ -51,7 +51,8 @@ public class FacebookClient {
 		return response;
 	}
 	
-	public List<OpenGraphUser> getFriends (String id, String token) 
+	//ALTERNATE OPTION FOR getFriends()
+	protected List<OpenGraphUser> getFriends (String id, String token) 
 	{
 		String response = "";
 		List<OpenGraphUser> friends = new ArrayList<OpenGraphUser>();
@@ -75,7 +76,27 @@ public class FacebookClient {
 		
 		return friends;
 	}
-
+	
+	/*
+	protected String getFriends(String id, String token)
+	{
+		String response = "";
+		String url = "";
+		
+		try {
+			url = String.format(API + API_FRIENDS, id, token);
+			
+		    HttpGet request = new HttpGet(url);
+		    response = client.execute(request, responseHandler);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			response = e.getMessage() + " (" + url + ")";
+		}
+		
+		return response;
+	}
+	*/
+	
 	protected String getLikes(String id, String token)
 	{
 		String response = "";
