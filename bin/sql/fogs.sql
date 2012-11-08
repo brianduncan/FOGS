@@ -42,3 +42,20 @@ ALTER TABLE views
 ADD CONSTRAINT fk_productid_refs_productfacebookid
 FOREIGN KEY (product_id) REFERENCES product(facebook_id)
 ON DELETE CASCADE;
+
+CREATE TABLE likes
+(
+user_id int NOT NULL,
+product_id int NOT NULL,
+CONSTRAINT pk_likes_userid_productid PRIMARY KEY (user_id, product_id)
+);
+
+ALTER TABLE likes
+ADD CONSTRAINT fk_likes_userid_refs_usersfacebookid
+FOREIGN KEY (user_id) REFERENCES users(facebook_id)
+ON DELETE CASCADE;
+
+ALTER TABLE likes
+ADD CONSTRAINT fk_likes_productid_refs_productfacebookid
+FOREIGN KEY (product_id) REFERENCES product(facebook_id)
+ON DELETE CASCADE;
