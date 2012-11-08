@@ -38,4 +38,8 @@ public class Views implements DatabaseObject {
 		this.viewCount = viewCount;
 	}
 	
+	public void incrementViewCount() {
+		viewCount++;
+	}
+	
 }
