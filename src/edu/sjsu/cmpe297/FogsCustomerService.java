@@ -43,6 +43,20 @@ public class FogsCustomerService {
 	  public String getFriendsVisitedProd(@PathParam("userid") String userid, @PathParam("compid") String compid, 
 			  							  @PathParam("facebookprodid") String facebookprodid, @PathParam("listsize") String listsize){
 		  
+	   
+	    String retdata = "";
+		  
+		  try {
+			//OpenGraphUser ogu = new OpenGraphUser(userid);
+			//List friends = ogu.getFriends();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			
+			retdata = "ERROR RETRIEVING DATA";
+		}
+		  
+		  
 		 /* Company comp = new Company(new Integer(facebookid), null);
 		  CompanyDAO compDAO = CompanyDAO.getInstance();
 		  try {
@@ -56,7 +70,7 @@ public class FogsCustomerService {
 		  
 		  return jObj.toString();*/
 		  
-		  return "";
+		  return retdata;
 	  }
 	
 	
