@@ -35,6 +35,32 @@ import edu.sjsu.cmpe297.db.object.Company;
 @Path("/fogs")
 public class FogsCustomerService {
 	
+	//This method will be used to get the friends that navigated the
+	//same product. It will pass back the configurable number of friends.
+	  @GET
+	  @Path("/friendsvisited/{userid}/{compid}/{facebookprodid}/{listsize}") 
+	  @Produces(MediaType.APPLICATION_JSON)
+	  public String getFriendsVisitedProd(@PathParam("userid") String userid, @PathParam("compid") String compid, 
+			  							  @PathParam("facebookprodid") String facebookprodid, @PathParam("listsize") String listsize){
+		  
+		 /* Company comp = new Company(new Integer(facebookid), null);
+		  CompanyDAO compDAO = CompanyDAO.getInstance();
+		  try {
+			comp = compDAO.get(comp);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		  
+		  JSONObject jObj = JSONObject.fromObject(comp);
+		  
+		  return jObj.toString();*/
+		  
+		  return "";
+	  }
+	
+	
+	
 	 //This method will be used to get the facebook Id for the company	
 	  @GET
 	  @Path("/compname/{facebookid}") 
