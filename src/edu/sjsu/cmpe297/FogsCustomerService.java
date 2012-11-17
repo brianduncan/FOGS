@@ -5,6 +5,7 @@ package edu.sjsu.cmpe297;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.ws.rs.GET;
@@ -14,8 +15,14 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import net.sf.json.JSONObject;
+
+import org.apache.commons.lang.StringUtils;
+
 import edu.sjsu.cmpe297.db.dao.CompanyDAO;
+import edu.sjsu.cmpe297.db.dao.ViewsDAO;
 import edu.sjsu.cmpe297.db.object.Company;
+import edu.sjsu.cmpe297.db.object.Views;
+import edu.sjsu.cmpe297.fb.OpenGraphUser;
 
 /**
  * @author rpriyad
@@ -34,6 +41,100 @@ import edu.sjsu.cmpe297.db.object.Company;
 //Sets the path to base URL + /fogs
 @Path("/fogs")
 public class FogsCustomerService {
+	
+	//This method will be used to get the friends that navigated the
+	//same product. It will pass back the configurable number of friends.
+	  @GET
+	  @Path("/friendsvisited/{userid}/{compid}/{facebookprodid}/{listsize}") 
+	  @Produces(MediaType.APPLICATION_JSON)
+	  public String getFriendsVisitedProd(@PathParam("userid") String userid, @PathParam("compid") String compid, 
+			  							  @PathParam("facebookprodid") String facebookprodid, @PathParam("listsize") String listsize){
+		  
+	   
+	    String retdata = "";
+	    JSONObject j = new JSONObject();
+	    //Validate that all the fields have been passed
+	    if(StringUtils.isEmpty(userid) || StringUtils.isEmpty(compid)
+	    		|| StringUtils.isEmpty(facebookprodid) || StringUtils.isEmpty(listsize)){
+	    		    	  
+			  j.put("101", "REQUIRED PARAMETER FIELDS MISSING");
+			  retdata = j.toString();	    	
+	    }else{
+		  
+			  try {
+				  //Get facebook freinds for the user
+				  OpenGraphUser ogu = new OpenGraphUser(userid);
+				  List<OpenGraphUser> friends = ogu.getFriends();
+				  int flsize = 0;
+				  //If friends returned for the user
+				  if(friends.size()>0){
+					  //Evaluate the size of the list to be returned
+					  if(StringUtils.isNotEmpty(listsize) 
+							  && this.isNumeric(listsize)){
+						  flsize = Integer.parseInt(listsize);
+					  }else{
+						  flsize = friends.size();
+					  }
+					  
+					  //Get all the users who viewed the product
+					  ViewsDAO vd = ViewsDAO.getInstance();
+					  List<Views> prodview = vd.getViewsForProduct(Integer.parseInt(facebookprodid));
+					  
+					  //Create a hasmap of the view that is returned
+					  HashMap<Integer, Integer> upmap = new HashMap<Integer, Integer>();
+					  for(int i=0; i<prodview.size(); i++){
+						  Views v = prodview.get(i);
+						  upmap.put(v.getUserId(), v.getViewCount());						  
+					  }
+					  
+					  //Check if the friend of users viewed the products
+					  JSONObject jusers = new JSONObject();
+					  int x = 0;
+					  for(int i=0; i<flsize; i++){
+						  //Check if friend's id exists in the list, then add it to the list to be returned
+						  if(upmap.containsKey(friends.get(i).getId())){
+							  x = x + 1;
+							  jusers.put(x, friends.get(i).getId());							  
+						  }						  
+					  }
+					  
+					  //If list of friends was found
+					  if(x>0){
+						  retdata = jusers.toString();
+					  }else{
+						  j.put("10", "NO FRIENDS FOUND");
+						  retdata = j.toString();
+					  }
+					  
+					  //Insert/Update the views record for the user for this product if user already does not exist in the db
+					  if(upmap.containsKey(userid)){
+						  //User exist in the db for viewing the product
+						  Views v = new Views(Integer.parseInt(userid), Integer.parseInt(facebookprodid), null);
+						  v = vd.get(v);
+						  Views vnew = new Views(v.getUserId(), v.getProductId(), new Integer(v.getViewCount().intValue() + 1));						 
+						  vd.update(v, vnew);
+					  }else{
+						  Views v = new Views(Integer.parseInt(userid), Integer.parseInt(facebookprodid), new Integer(1));
+						  vd.insert(v);
+					  }
+					  
+				  }else{
+					  j.put("10", "NO FRIENDS FOUND");
+					  retdata = j.toString();
+				  }
+				  
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				j.put("100", "ERROR RETRIEVING DATA");
+				retdata = j.toString();
+			}
+	    }
+		  
+		  return retdata;
+	  }
+	
+	
 	
 	 //This method will be used to get the facebook Id for the company	
 	  @GET
@@ -157,6 +258,22 @@ public class FogsCustomerService {
 	  List<String> list = null;
 	  return list;
 	  //TODO: This method will return a list	  
+  }
+  
+  
+  //Check if the string passed is an integer number
+  private boolean isNumeric(String str)  
+  {  
+    try  
+    {  
+        
+    	Integer.parseInt(str);  
+    }  
+    catch(NumberFormatException nfe)  
+    {  
+      return false;  
+    }  
+    return true;  
   }
 
 
