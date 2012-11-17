@@ -19,9 +19,11 @@ import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 
 import edu.sjsu.cmpe297.db.dao.CompanyDAO;
+import edu.sjsu.cmpe297.db.dao.ProductDAO;
 import edu.sjsu.cmpe297.db.dao.UsersDAO;
 import edu.sjsu.cmpe297.db.dao.ViewsDAO;
 import edu.sjsu.cmpe297.db.object.Company;
+import edu.sjsu.cmpe297.db.object.Product;
 import edu.sjsu.cmpe297.db.object.Users;
 import edu.sjsu.cmpe297.db.object.Views;
 import edu.sjsu.cmpe297.fb.OpenGraphUser;
@@ -47,11 +49,11 @@ public class FogsCustomerService {
 	//This method will be used to get the friends that navigated the
 	//same product. It will pass back the configurable number of friends.
 	  @GET
-	  @Path("/friendsvisited/{userid}/{compid}/{facebookprodid}/{listsize}/{uname}") 
+	  @Path("/friendsvisited/{userid}/{compid}/{facebookprodid}/{listsize}/{uname}/{prodname}") 
 	  @Produces(MediaType.APPLICATION_JSON)
 	  public String getFriendsVisitedProd(@PathParam("userid") String userid, @PathParam("compid") String compid, 
 			  							  @PathParam("facebookprodid") String facebookprodid, @PathParam("listsize") String listsize, 
-			  							@PathParam("uname") String uname){
+			  							  @PathParam("uname") String uname, @PathParam("prodname") String prodname){
 		  
 	   
 	    String retdata = "";
@@ -120,6 +122,9 @@ public class FogsCustomerService {
 						  
 						  //Check and add user if not present in users table
 						  checkAndAddUser(Integer.parseInt(userid), uname);
+						  
+						  //Check and add product if not present
+						  checkAndAddProduct(Integer.parseInt(facebookprodid), prodname, Integer.parseInt(compid));
 						  
 						  //Check and add product if not existing in db
 						  Views v = new Views(Integer.parseInt(userid), Integer.parseInt(facebookprodid), new Integer(1));
@@ -312,6 +317,29 @@ public class FogsCustomerService {
   }
   
   //Check if this product is present in product table and add the product
-
+  private String checkAndAddProduct(Integer prodId, String prodName, Integer compId ){
+	  String ret = "SUCCESS";
+	  ProductDAO pdao = ProductDAO.getInstance();
+	  
+	  Product prod = new  Product(prodId, prodName, compId);
+	  @SuppressWarnings("unused")
+	  Product prod1 = new  Product(prodId, prodName, compId);
+	  
+		try {
+			prod1 = pdao.get(prod);
+		} catch (SQLException e) {
+			//Prod does not exist in prod table, so add the prod
+			e.printStackTrace();
+			
+			try {
+				pdao.insert(prod);
+			} catch (SQLException e1) {
+				ret = "ERROR";
+				e1.printStackTrace();
+			}
+		}
+	  
+	  return ret;
+  }
 
 }
