@@ -287,7 +287,7 @@ public class FogsCustomerService {
   //Check if this user is present in users table and add the user
   private String checkAndAddUser(Integer fbId, String name){
 	  
-	  String ret = "SUCCESS";
+	  String ret = "SUCCESS"; 
 	  
 		  
 		  UsersDAO udao = UsersDAO.getInstance();
