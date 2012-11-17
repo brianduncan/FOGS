@@ -21,8 +21,8 @@ public class UsersDAO implements DatabaseAccessObject<Users>{
 	
 	private static final String READ_USERS_CMD = "select * from users";
 	private static final String READ_USERS_FOR_ID_CMD = READ_USERS_CMD + " where facebook_id = ?";
-	private static final String INSERT_USERS_CMD = "insert into users (facebook_id, login) values (?, ?)";
-	private static final String UPDATE_USERS_CMD = "update users set facebook_id=?, login=? where facebook_id=?";
+	private static final String INSERT_USERS_CMD = "insert into users (facebook_id, name) values (?, ?)";
+	private static final String UPDATE_USERS_CMD = "update users set facebook_id=?, name=? where facebook_id=?";
 	private static final String DELETE_USERS_CMD = "delete from users where facebook_id=?";
 
 	private UsersDAO() {
@@ -53,8 +53,8 @@ public class UsersDAO implements DatabaseAccessObject<Users>{
 		
 		while (rs.next()) {
 			Integer facebookId = rs.getInt(1);
-			String login = rs.getString(2);
-			Users u = new Users(facebookId, login);
+			String name = rs.getString(2);
+			Users u = new Users(facebookId, name);
 			users.add(u);
 		}
 		
@@ -73,8 +73,8 @@ public class UsersDAO implements DatabaseAccessObject<Users>{
 		rs.next();
 		
 		Integer facebookId = rs.getInt(1);
-		String login = rs.getString(2);
-		Users u = new Users(facebookId, login);
+		String name = rs.getString(2);
+		Users u = new Users(facebookId, name);
 		
 		rs.close();
 		stmt.close();
