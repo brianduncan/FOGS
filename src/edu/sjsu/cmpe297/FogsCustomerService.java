@@ -19,8 +19,10 @@ import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 
 import edu.sjsu.cmpe297.db.dao.CompanyDAO;
+import edu.sjsu.cmpe297.db.dao.UsersDAO;
 import edu.sjsu.cmpe297.db.dao.ViewsDAO;
 import edu.sjsu.cmpe297.db.object.Company;
+import edu.sjsu.cmpe297.db.object.Users;
 import edu.sjsu.cmpe297.db.object.Views;
 import edu.sjsu.cmpe297.fb.OpenGraphUser;
 
@@ -45,10 +47,11 @@ public class FogsCustomerService {
 	//This method will be used to get the friends that navigated the
 	//same product. It will pass back the configurable number of friends.
 	  @GET
-	  @Path("/friendsvisited/{userid}/{compid}/{facebookprodid}/{listsize}") 
+	  @Path("/friendsvisited/{userid}/{compid}/{facebookprodid}/{listsize}/{uname}") 
 	  @Produces(MediaType.APPLICATION_JSON)
 	  public String getFriendsVisitedProd(@PathParam("userid") String userid, @PathParam("compid") String compid, 
-			  							  @PathParam("facebookprodid") String facebookprodid, @PathParam("listsize") String listsize){
+			  							  @PathParam("facebookprodid") String facebookprodid, @PathParam("listsize") String listsize, 
+			  							@PathParam("uname") String uname){
 		  
 	   
 	    String retdata = "";
@@ -114,6 +117,11 @@ public class FogsCustomerService {
 						  Views vnew = new Views(v.getUserId(), v.getProductId(), new Integer(v.getViewCount().intValue() + 1));						 
 						  vd.update(v, vnew);
 					  }else{
+						  
+						  //Check and add user if not present in users table
+						  checkAndAddUser(Integer.parseInt(userid), uname);
+						  
+						  //Check and add product if not existing in db
 						  Views v = new Views(Integer.parseInt(userid), Integer.parseInt(facebookprodid), new Integer(1));
 						  vd.insert(v);
 					  }
@@ -275,6 +283,35 @@ public class FogsCustomerService {
     }  
     return true;  
   }
+  
+  //Check if this user is present in users table and add the user
+  private String checkAndAddUser(Integer fbId, String name){
+	  
+	  String ret = "SUCCESS";
+	  
+		  
+		  UsersDAO udao = UsersDAO.getInstance();
+		  Users user = new Users(fbId, name);
+		  @SuppressWarnings("unused")
+		Users user1 = new Users(fbId, name);
+		  try {
+			user1 = udao.get(user);
+		} catch (SQLException e) {			
+			e.printStackTrace();
+			//User does not exist in user table, so add the user
+			try {
+				udao.insert(user);
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+				ret = "ERROR";
+			}
+		}
+	  
+	  return ret;	  
+  }
+  
+  //Check if this product is present in product table and add the product
 
 
 }
