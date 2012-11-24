@@ -19,13 +19,16 @@ import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 
 import edu.sjsu.cmpe297.db.dao.CompanyDAO;
+import edu.sjsu.cmpe297.db.dao.LikesDAO;
 import edu.sjsu.cmpe297.db.dao.ProductDAO;
 import edu.sjsu.cmpe297.db.dao.UsersDAO;
 import edu.sjsu.cmpe297.db.dao.ViewsDAO;
 import edu.sjsu.cmpe297.db.object.Company;
+import edu.sjsu.cmpe297.db.object.Likes;
 import edu.sjsu.cmpe297.db.object.Product;
 import edu.sjsu.cmpe297.db.object.Users;
 import edu.sjsu.cmpe297.db.object.Views;
+import edu.sjsu.cmpe297.fb.OpenGraphLikes;
 import edu.sjsu.cmpe297.fb.OpenGraphUser;
 
 /**
@@ -146,9 +149,87 @@ public class FogsCustomerService {
 		  
 		  return retdata;
 	  }
-	
-	
-	
+	  
+	  //This method will return the number of likes for a product by the user's friends
+	  @GET
+	  @Path("/friendsliked/{userid}/{compid}/{facebookprodid}/{uname}/{prodname}") 
+	  @Produces(MediaType.APPLICATION_JSON)
+	  public String getFriendsLikesProd(@PathParam("userid") String userid, @PathParam("compid") String compid, 
+			  							@PathParam("facebookprodid") String facebookprodid, 
+			  							@PathParam("uname") String uname, @PathParam("prodname") String prodname) 
+	  {
+		  String retdata = "";
+		  JSONObject j = new JSONObject();
+		  
+		  //Validate that all the fields have been passed
+		  if(StringUtils.isEmpty(userid) || StringUtils.isEmpty(compid) || StringUtils.isEmpty(facebookprodid)) 
+		  {
+			  j.put("101", "REQUIRED PARAMETER FIELDS MISSING");
+			  retdata = j.toString();	    	
+		  }
+		  else 
+		  {
+			  try 
+			  {
+				  //Get list of user's facebook friends
+				  OpenGraphUser openGraphUser = new OpenGraphUser(userid);
+				  List<OpenGraphUser> friendsList = openGraphUser.getFriends();
+				  
+				  //If friends returned for the user
+				  if(friendsList.size() > 0)
+				  {
+					  JSONObject jusers = new JSONObject();
+
+					  //Get list of people who like the product
+					  LikesDAO likesDAO = LikesDAO.getInstance();
+					  List<Likes> productLikesList = likesDAO.getLikesForProduct(Integer.parseInt(facebookprodid));
+//					  List<Likes> productLikesList = likesDAO.getLikesForProduct(Long.parseLong(facebookprodid));
+					
+					  //Count for number of friends who like the product
+					  int count = 0;
+					  
+					  //Determine whether any of the user's friends like the product
+					  for(int i = 0; i < friendsList.size(); i++)
+					  {
+						  Likes friendLike = new Likes(Integer.parseInt(friendsList.get(i).getId()), Integer.parseInt(facebookprodid));
+//						  Likes friendLike = new Likes(Long.parseLong(friendsList.get(i).getId()), Long.parseLong(facebookprodid));
+						  
+						  if(productLikesList.contains(friendLike))
+						  {
+							  count++;
+							  jusers.put(count, friendsList.get(i).getId());
+						  }
+					  }
+
+					  if(count > 0)
+					  {
+						  retdata = jusers.toString();
+					  }
+					  else
+					  {
+						  j.put("10", "NO FRIENDS FOUND");
+						  retdata = j.toString();
+					  }
+
+				  }
+				  else
+				  {
+					  j.put("10", "NO FRIENDS FOUND");
+					  retdata = j.toString();
+				  }
+			} 
+			catch (Exception e) 
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				j.put("100", "ERROR RETRIEVING DATA");
+				retdata = j.toString();
+			}
+	    }
+		  
+		return retdata;
+	  }
+	  
 	 //This method will be used to get the facebook Id for the company	
 	  @GET
 	  @Path("/compname/{facebookid}") 
@@ -251,7 +332,11 @@ public class FogsCustomerService {
   public List<String> getFacebookLikesForUserFreind(@PathParam("uName") String uName, @PathParam("prodName") String prodtName, @PathParam("compName") String compName){
 	  List<String> list = null;
 	  return list;
-	  //TODO: This method will return a list  
+	  //TODO: This method will return a list 
+	  
+	  
+	  
+	  
   }
   
   //Checks if facebook user exists
