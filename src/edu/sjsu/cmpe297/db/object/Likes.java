@@ -26,4 +26,17 @@ public class Likes implements DatabaseObject{
 	public void setProductId(Long productId) {
 		this.productId = productId;
 	}
+	
+	@Override
+	public boolean equals(Object obj)
+	{
+		Likes like = (Likes)obj;
+
+		if(like.getUserId().equals(userId) && like.getProductId().equals(productId))
+		{
+			return true;
+		}
+
+		return false;
+	}
 }
