@@ -53,9 +53,9 @@ public class ProductDAO implements DatabaseAccessObject<Product>{
 		ResultSet rs = stmt.executeQuery();
 		
 		while (rs.next()) {
-			Integer facebookId = rs.getInt(1);
+			Long facebookId = rs.getLong(1);
 			String name = rs.getString(2);
-			Integer companyId = rs.getInt(3);
+			Long companyId = rs.getLong(3);
 			Product p = new Product(facebookId, name, companyId);
 			products.add(p);
 		}
@@ -69,14 +69,14 @@ public class ProductDAO implements DatabaseAccessObject<Product>{
 	@Override
 	public Product get(Product data) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(READ_PRODUCT_FOR_ID_CMD);
-		stmt.setInt(1, data.getFacebookId());
+		stmt.setLong(1, data.getFacebookId());
 		ResultSet rs = stmt.executeQuery();
 		
 		rs.next();
 		
-		Integer facebookId = rs.getInt(1);
+		Long facebookId = rs.getLong(1);
 		String name = rs.getString(2);
-		Integer companyId = rs.getInt(3);
+		Long companyId = rs.getLong(3);
 		Product p = new Product(facebookId, name, companyId);
 		
 		rs.close();
@@ -85,15 +85,15 @@ public class ProductDAO implements DatabaseAccessObject<Product>{
 		return p;
 	}
 	
-	public List<Product> getProductsForCompany(Integer companyId) throws SQLException {
+	public List<Product> getProductsForCompany(Long companyId) throws SQLException {
 		List<Product> products = new ArrayList<Product>();
 		
 		PreparedStatement stmt = con.prepareStatement(READ_PRODUCT_FOR_COMPANY_CMD);
-		stmt.setInt(1, companyId);
+		stmt.setLong(1, companyId);
 		ResultSet rs = stmt.executeQuery();
 		
 		while (rs.next()) {
-			Integer facebookId = rs.getInt(1);
+			Long facebookId = rs.getLong(1);
 			String name = rs.getString(2);
 			Product p = new Product(facebookId, name, companyId);
 			products.add(p);
@@ -108,9 +108,9 @@ public class ProductDAO implements DatabaseAccessObject<Product>{
 	@Override
 	public void insert(Product data) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(INSERT_PRODUCT_CMD);
-		stmt.setInt(1, data.getFacebookId());
+		stmt.setLong(1, data.getFacebookId());
 		stmt.setString(2, data.getName());
-		stmt.setInt(3, data.getCompanyId());
+		stmt.setLong(3, data.getCompanyId());
 		stmt.executeUpdate();
 		stmt.close();
 	}
@@ -118,10 +118,10 @@ public class ProductDAO implements DatabaseAccessObject<Product>{
 	@Override
 	public void update(Product oldData, Product newData) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(UPDATE_PRODUCT_CMD);
-		stmt.setInt(1, newData.getFacebookId());
+		stmt.setLong(1, newData.getFacebookId());
 		stmt.setString(2, newData.getName());
-		stmt.setInt(3, newData.getCompanyId());
-		stmt.setInt(4, oldData.getFacebookId());
+		stmt.setLong(3, newData.getCompanyId());
+		stmt.setLong(4, oldData.getFacebookId());
 		stmt.executeUpdate();
 		stmt.close();
 	}
@@ -129,7 +129,7 @@ public class ProductDAO implements DatabaseAccessObject<Product>{
 	@Override
 	public void delete(Product data) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(DELETE_PRODUCT_CMD);
-		stmt.setInt(1, data.getFacebookId());
+		stmt.setLong(1, data.getFacebookId());
 		stmt.executeUpdate();
 		stmt.close();
 	}

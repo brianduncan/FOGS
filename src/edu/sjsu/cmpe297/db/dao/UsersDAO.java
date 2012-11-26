@@ -52,7 +52,7 @@ public class UsersDAO implements DatabaseAccessObject<Users>{
 		ResultSet rs = stmt.executeQuery();
 		
 		while (rs.next()) {
-			Integer facebookId = rs.getInt(1);
+			Long facebookId = rs.getLong(1);
 			String name = rs.getString(2);
 			Users u = new Users(facebookId, name);
 			users.add(u);
@@ -67,12 +67,12 @@ public class UsersDAO implements DatabaseAccessObject<Users>{
 	@Override
 	public Users get(Users data) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(READ_USERS_FOR_ID_CMD);
-		stmt.setInt(1, data.getFacebookId());
+		stmt.setLong(1, data.getFacebookId());
 		ResultSet rs = stmt.executeQuery();
 		
 		rs.next();
 		
-		Integer facebookId = rs.getInt(1);
+		Long facebookId = rs.getLong(1);
 		String name = rs.getString(2);
 		Users u = new Users(facebookId, name);
 		
@@ -85,7 +85,7 @@ public class UsersDAO implements DatabaseAccessObject<Users>{
 	@Override
 	public void insert(Users data) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(INSERT_USERS_CMD);
-		stmt.setInt(1, data.getFacebookId());
+		stmt.setLong(1, data.getFacebookId());
 		stmt.setString(2, data.getLogin());
 		stmt.executeUpdate();
 		stmt.close();
@@ -94,9 +94,9 @@ public class UsersDAO implements DatabaseAccessObject<Users>{
 	@Override
 	public void update(Users oldData, Users newData) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(UPDATE_USERS_CMD);
-		stmt.setInt(1, newData.getFacebookId());
+		stmt.setLong(1, newData.getFacebookId());
 		stmt.setString(2, newData.getLogin());
-		stmt.setInt(3, oldData.getFacebookId());
+		stmt.setLong(3, oldData.getFacebookId());
 		stmt.executeUpdate();
 		stmt.close();
 	}
@@ -104,7 +104,7 @@ public class UsersDAO implements DatabaseAccessObject<Users>{
 	@Override
 	public void delete(Users data) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(DELETE_USERS_CMD);
-		stmt.setInt(1, data.getFacebookId());
+		stmt.setLong(1, data.getFacebookId());
 		stmt.executeUpdate();
 		stmt.close();
 	}

@@ -78,10 +78,10 @@ public class FogsCustomerService {
 					  
 					  //Get all the users who viewed the product
 					  ViewsDAO vd = ViewsDAO.getInstance();
-					  List<Views> prodview = vd.getViewsForProduct(Integer.parseInt(facebookprodid));
+					  List<Views> prodview = vd.getViewsForProduct(Long.parseLong(facebookprodid));
 					  
 					  //Create a hasmap of the view that is returned
-					  HashMap<Integer, Integer> upmap = new HashMap<Integer, Integer>();
+					  HashMap<Long, Long> upmap = new HashMap<Long, Long>();
 					  for(int i=0; i<prodview.size(); i++){
 						  Views v = prodview.get(i);
 						  upmap.put(v.getUserId(), v.getViewCount());						  
@@ -109,12 +109,12 @@ public class FogsCustomerService {
 					  //Insert/Update the views record for the user for this product if user already does not exist in the db
 					  if(upmap.containsKey(userid)){
 						  //User exist in the db for viewing the product
-						  Views v = new Views(Integer.parseInt(userid), Integer.parseInt(facebookprodid), null);
+						  Views v = new Views(Long.parseLong(userid), Long.parseLong(facebookprodid), null);
 						  v = vd.get(v);
-						  Views vnew = new Views(v.getUserId(), v.getProductId(), new Integer(v.getViewCount().intValue() + 1));						 
+						  Views vnew = new Views(v.getUserId(), v.getProductId(), new Long(v.getViewCount().longValue() + 1));						 
 						  vd.update(v, vnew);
 					  }else{
-						  Views v = new Views(Integer.parseInt(userid), Integer.parseInt(facebookprodid), new Integer(1));
+						  Views v = new Views(Long.parseLong(userid), Long.parseLong(facebookprodid), new Long(1));
 						  vd.insert(v);
 					  }
 					  
@@ -142,7 +142,7 @@ public class FogsCustomerService {
 	  @Produces(MediaType.APPLICATION_JSON)
 	  public String getCompanyName(@PathParam("facebookid") String facebookid){
 		  
-		  Company comp = new Company(new Integer(facebookid), null);
+		  Company comp = new Company(new Long(facebookid), null);
 		  CompanyDAO compDAO = CompanyDAO.getInstance();
 		  try {
 			comp = compDAO.get(comp);

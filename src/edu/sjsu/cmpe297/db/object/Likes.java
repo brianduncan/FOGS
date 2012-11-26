@@ -2,28 +2,28 @@ package edu.sjsu.cmpe297.db.object;
 
 public class Likes implements DatabaseObject{
 	// member variables
-	private Integer userId;
-	private Integer productId;
+	private Long userId;
+	private Long productId;
 	
-	public Likes(Integer userId, Integer productId) {
+	public Likes(Long userId, Long productId) {
 		this.userId = userId;
 		this.productId = productId;
 	}
 	
 	// accessor methods
-	public Integer getUserId() {
+	public Long getUserId() {
 		return userId;
 	}
 	
-	public Integer getProductId() {
+	public Long getProductId() {
 		return productId;
 	}
 	
-	public void setUserId(Integer userId) {
+	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
 	
-	public void setProductId(Integer productId) {
+	public void setProductId(Long productId) {
 		this.productId = productId;
 	}
 }

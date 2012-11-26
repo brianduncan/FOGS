@@ -53,8 +53,8 @@ public class LikesDAO implements DatabaseAccessObject<Likes>{
 		ResultSet rs = stmt.executeQuery();
 		
 		while (rs.next()) {
-			Integer userId = rs.getInt(1);
-			Integer productId = rs.getInt(2);
+			Long userId = rs.getLong(1);
+			Long productId = rs.getLong(2);
 			Likes l = new Likes(userId, productId);
 			likes.add(l);
 		}
@@ -68,14 +68,14 @@ public class LikesDAO implements DatabaseAccessObject<Likes>{
 	@Override
 	public Likes get(Likes data) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(READ_LIKES_FOR_USER_AND_PRODUCT_CMD);
-		stmt.setInt(1, data.getUserId());
-		stmt.setInt(2, data.getProductId());
+		stmt.setLong(1, data.getUserId());
+		stmt.setLong(2, data.getProductId());
 		ResultSet rs = stmt.executeQuery();
 		
 		rs.next();
 		
-		Integer userId = rs.getInt(1);
-		Integer productId = rs.getInt(2);
+		Long userId = rs.getLong(1);
+		Long productId = rs.getLong(2);
 		Likes l = new Likes(userId, productId);
 		
 		rs.close();
@@ -84,15 +84,15 @@ public class LikesDAO implements DatabaseAccessObject<Likes>{
 		return l;
 	}
 	
-	public List<Likes> getLikesForUser(Integer userId) throws SQLException {
+	public List<Likes> getLikesForUser(Long userId) throws SQLException {
 		List<Likes> likes = new ArrayList<Likes>();
 		
 		PreparedStatement stmt = con.prepareStatement(READ_LIKES_FOR_USER_CMD);
-		stmt.setInt(1, userId);
+		stmt.setLong(1, userId);
 		ResultSet rs = stmt.executeQuery();
 		
 		while (rs.next()) {
-			Integer productId = rs.getInt(2);
+			Long productId = rs.getLong(2);
 			Likes l = new Likes(userId, productId);
 			likes.add(l);
 		}
@@ -103,15 +103,15 @@ public class LikesDAO implements DatabaseAccessObject<Likes>{
 		return likes;
 	}
 	
-	public List<Likes> getLikesForProduct(Integer productId) throws SQLException {
+	public List<Likes> getLikesForProduct(Long productId) throws SQLException {
 		List<Likes> likes = new ArrayList<Likes>();
 		
 		PreparedStatement stmt = con.prepareStatement(READ_LIKES_FOR_PRODUCT_CMD);
-		stmt.setInt(1, productId);
+		stmt.setLong(1, productId);
 		ResultSet rs = stmt.executeQuery();
 		
 		while (rs.next()) {
-			Integer userId = rs.getInt(1);
+			Long userId = rs.getLong(1);
 			Likes l = new Likes(userId, productId);
 			likes.add(l);
 		}
@@ -125,8 +125,8 @@ public class LikesDAO implements DatabaseAccessObject<Likes>{
 	@Override
 	public void insert(Likes data) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(INSERT_LIKES_CMD);
-		stmt.setInt(1, data.getUserId());
-		stmt.setInt(2, data.getProductId());
+		stmt.setLong(1, data.getUserId());
+		stmt.setLong(2, data.getProductId());
 		stmt.executeUpdate();
 		stmt.close();
 	}
@@ -134,8 +134,8 @@ public class LikesDAO implements DatabaseAccessObject<Likes>{
 	@Override
 	public void delete(Likes data) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(DELETE_LIKES_CMD);
-		stmt.setInt(1, data.getUserId());
-		stmt.setInt(2, data.getProductId());
+		stmt.setLong(1, data.getUserId());
+		stmt.setLong(2, data.getProductId());
 		stmt.executeUpdate();
 		stmt.close();
 	}

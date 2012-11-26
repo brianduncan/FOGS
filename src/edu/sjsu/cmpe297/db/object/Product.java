@@ -3,18 +3,18 @@ package edu.sjsu.cmpe297.db.object;
 public class Product implements DatabaseObject {
 
 	// member variables
-	private Integer facebookId; //TODO: choose Long because there are a lot of facebook ids out there
+	private Long facebookId; //TODO: choose Long because there are a lot of facebook ids out there
 	private String name;
-	private Integer companyId;
+	private Long companyId;
 	
-	public Product(Integer facebookId, String name, Integer companyId) {
+	public Product(Long facebookId, String name, Long companyId) {
 		this.facebookId = facebookId;
 		this.name = name;
 		this.companyId = companyId;
 	}
 	
 	// accessor methods
-	public Integer getFacebookId() {
+	public Long getFacebookId() {
 		return facebookId;
 	}
 	
@@ -22,11 +22,11 @@ public class Product implements DatabaseObject {
 		return name;
 	}
 	
-	public Integer getCompanyId() {
+	public Long getCompanyId() {
 		return companyId;
 	}
 	
-	public void setFacebookId(Integer facebookId) {
+	public void setFacebookId(Long facebookId) {
 		this.facebookId = facebookId;
 	}
 	
@@ -34,7 +34,7 @@ public class Product implements DatabaseObject {
 		this.name = name;
 	}
 	
-	public void setCompanyId(Integer companyId) {
+	public void setCompanyId(Long companyId) {
 		this.companyId = companyId;
 	}
 	
