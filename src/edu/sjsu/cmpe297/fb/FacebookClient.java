@@ -2,6 +2,7 @@ package edu.sjsu.cmpe297.fb;
 /**
  * Engine to make calls using the Facebook Open Graph API
  */
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,7 +53,7 @@ public class FacebookClient {
 	}
 	
 	//ALTERNATE OPTION FOR getFriends()
-	protected List<OpenGraphUser> getFriends (String id, String token) 
+	protected List<OpenGraphUser> getFriends(String id, String token) 
 	{
 		String response = "";
 		List<OpenGraphUser> friends = new ArrayList<OpenGraphUser>();
@@ -66,10 +67,24 @@ public class FacebookClient {
 			JSONObject json = new JSONObject(response);
 			JSONArray array = json.getJSONArray("data");
 			
+			System.out.println("Array length = " + array.length());
+			
+			java.util.Date date1 = new java.util.Date();
+			System.out.println(new Timestamp(date1.getTime()));
+			
 			for (int i = 0; i < array.length(); i++) {
-				OpenGraphUser friend = new OpenGraphUser(array.getString(i));
+//			for (int i = 0; i < 25; i++) {
+				JSONObject person = array.getJSONObject(i);
+				OpenGraphUser friend = new OpenGraphUser(person.get("id").toString());
 				friends.add(friend);
+				
+//				OpenGraphUser friend = new OpenGraphUser(array.getString(i));
+//				friends.add(friend);
 			}
+			
+			java.util.Date date2 = new java.util.Date();
+			System.out.println(new Timestamp(date2.getTime()));
+			
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
