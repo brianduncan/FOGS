@@ -19,10 +19,12 @@ import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 
 import edu.sjsu.cmpe297.db.dao.CompanyDAO;
+import edu.sjsu.cmpe297.db.dao.LikesDAO;
 import edu.sjsu.cmpe297.db.dao.ProductDAO;
 import edu.sjsu.cmpe297.db.dao.UsersDAO;
 import edu.sjsu.cmpe297.db.dao.ViewsDAO;
 import edu.sjsu.cmpe297.db.object.Company;
+import edu.sjsu.cmpe297.db.object.Likes;
 import edu.sjsu.cmpe297.db.object.Product;
 import edu.sjsu.cmpe297.db.object.Users;
 import edu.sjsu.cmpe297.db.object.Views;
@@ -83,10 +85,10 @@ public class FogsCustomerService {
 					  
 					  //Get all the users who viewed the product
 					  ViewsDAO vd = ViewsDAO.getInstance();
-					  List<Views> prodview = vd.getViewsForProduct(Integer.parseInt(facebookprodid));
+					  List<Views> prodview = vd.getViewsForProduct(Long.parseLong(facebookprodid));
 					  
 					  //Create a hasmap of the view that is returned
-					  HashMap<Integer, Integer> upmap = new HashMap<Integer, Integer>();
+					  HashMap<Long, Long> upmap = new HashMap<Long, Long>();
 					  for(int i=0; i<prodview.size(); i++){
 						  Views v = prodview.get(i);
 						  upmap.put(v.getUserId(), v.getViewCount());						  
@@ -114,20 +116,20 @@ public class FogsCustomerService {
 					  //Insert/Update the views record for the user for this product if user already does not exist in the db
 					  if(upmap.containsKey(userid)){
 						  //User exist in the db for viewing the product
-						  Views v = new Views(Integer.parseInt(userid), Integer.parseInt(facebookprodid), null);
+						  Views v = new Views(Long.parseLong(userid), Long.parseLong(facebookprodid), null);
 						  v = vd.get(v);
-						  Views vnew = new Views(v.getUserId(), v.getProductId(), new Integer(v.getViewCount().intValue() + 1));						 
+						  Views vnew = new Views(v.getUserId(), v.getProductId(), new Long(v.getViewCount().intValue() + 1));						 
 						  vd.update(v, vnew);
 					  }else{
 						  
 						  //Check and add user if not present in users table
-						  checkAndAddUser(Integer.parseInt(userid), uname);
+						  checkAndAddUser(Long.parseLong(userid), uname);
 						  
 						  //Check and add product if not present
-						  checkAndAddProduct(Integer.parseInt(facebookprodid), prodname, Integer.parseInt(compid));
+						  checkAndAddProduct(Long.parseLong(facebookprodid), prodname, Long.parseLong(compid));
 						  
 						  //Check and add product if not existing in db
-						  Views v = new Views(Integer.parseInt(userid), Integer.parseInt(facebookprodid), new Integer(1));
+						  Views v = new Views(Long.parseLong(userid), Long.parseLong(facebookprodid), new Long(1));
 						  vd.insert(v);
 					  }
 					  
@@ -146,6 +148,83 @@ public class FogsCustomerService {
 		  
 		  return retdata;
 	  }
+	  
+	  //This method will return the number of likes for a product by the user's friends
+	  @GET
+	  @Path("/friendsliked/{userid}/{facebookprodid}") 
+	  @Produces(MediaType.APPLICATION_JSON)
+	  public String getFriendsLikesProd(@PathParam("userid") String userid, @PathParam("facebookprodid") String facebookprodid) 
+	  {
+		  String retdata = "";
+		  JSONObject j = new JSONObject();
+		  
+		  //Validate that all the fields have been passed
+		  if(StringUtils.isEmpty(userid) || StringUtils.isEmpty(facebookprodid)) 
+		  {
+			  j.put("101", "REQUIRED PARAMETER FIELDS MISSING");
+			  retdata = j.toString();	    	
+		  }
+		  else 
+		  {
+			  try 
+			  {
+				  //Get list of user's facebook friends
+				  OpenGraphUser openGraphUser = new OpenGraphUser(userid);
+				  openGraphUser.setAccessToken("AAAAAAITEghMBAElMG53HmJXZCudAyZCHo3C0aD2VkbIhxKLSQdRsCNXbKbwvklZBf8W78oOZBSWR9qdpAtxCyc7Ja0j70qtVi6V40aEEKAZDZD");
+				  List<OpenGraphUser> friendsList = openGraphUser.getFriends();
+				  
+				  //If friends returned for the user
+				  if(friendsList.size() > 0)
+				  {
+					  JSONObject jusers = new JSONObject();
+
+					  //Get list of people who like the product
+					  LikesDAO likesDAO = LikesDAO.getInstance();
+					  List<Likes> productLikesList = likesDAO.getLikesForProduct(Long.parseLong(facebookprodid));
+					
+					  //Count for number of friends who like the product
+					  int count = 0;
+					  
+					  //Determine whether any of the user's friends like the product
+					  for(int i = 0; i < friendsList.size(); i++)
+					  {
+						  Likes friendLike = new Likes(Long.parseLong(friendsList.get(i).getId()), Long.parseLong(facebookprodid));
+						  
+						  if(productLikesList.contains(friendLike))
+						  {
+							  count++;
+							  jusers.put(count, friendsList.get(i).toJson());
+						  }
+					  }
+
+					  if(count > 0)
+					  {
+						  retdata = jusers.toString();
+					  }
+					  else
+					  {
+						  j.put("10", "NO FRIENDS FOUND");
+						  retdata = j.toString();
+					  }
+
+				  }
+				  else
+				  {
+					  j.put("10", "NO FRIENDS FOUND");
+					  retdata = j.toString();
+				  }
+			} 
+			catch (Exception e) 
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				j.put("100", "ERROR RETRIEVING DATA");
+				retdata = j.toString();
+			}
+	    }
+		  
+		return retdata;
+	  }
 	
 	
 	
@@ -155,7 +234,7 @@ public class FogsCustomerService {
 	  @Produces(MediaType.APPLICATION_JSON)
 	  public String getCompanyName(@PathParam("facebookid") String facebookid){
 		  
-		  Company comp = new Company(new Integer(facebookid), null);
+		  Company comp = new Company(new Long(facebookid), null);
 		  CompanyDAO compDAO = CompanyDAO.getInstance();
 		  try {
 			comp = compDAO.get(comp);
@@ -263,7 +342,7 @@ public class FogsCustomerService {
 	  return "";
   }
   
-  //Gets the friemds comments for facebook 
+  //Gets the friends comments for facebook 
   @GET
   @Path("/facebookcomts/{uName}/{prodName}/{compName}") 
   @Produces(MediaType.APPLICATION_JSON)
@@ -274,13 +353,13 @@ public class FogsCustomerService {
   }
   
   
-  //Check if the string passed is an integer number
+  //Check if the string passed is an Long number
   private boolean isNumeric(String str)  
   {  
     try  
     {  
         
-    	Integer.parseInt(str);  
+    	Long.parseLong(str);  
     }  
     catch(NumberFormatException nfe)  
     {  
@@ -290,7 +369,7 @@ public class FogsCustomerService {
   }
   
   //Check if this user is present in users table and add the user
-  private String checkAndAddUser(Integer fbId, String name){
+  private String checkAndAddUser(Long fbId, String name){
 	  
 	  String ret = "SUCCESS"; 
 	  
@@ -317,7 +396,7 @@ public class FogsCustomerService {
   }
   
   //Check if this product is present in product table and add the product
-  private String checkAndAddProduct(Integer prodId, String prodName, Integer compId ){
+  private String checkAndAddProduct(Long prodId, String prodName, Long compId ){
 	  String ret = "SUCCESS";
 	  ProductDAO pdao = ProductDAO.getInstance();
 	  
