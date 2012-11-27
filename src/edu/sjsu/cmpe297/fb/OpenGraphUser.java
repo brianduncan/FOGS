@@ -17,6 +17,7 @@ public class OpenGraphUser {
 	private FacebookClient client;
 	private OpenGraphLikes userLikes;
 	private List<OpenGraphUser> userFriends;
+	private String friends;
 	
 	/**
 	 * Creates a new instance of a Facebook user from the 
@@ -102,11 +103,24 @@ public class OpenGraphUser {
 		userFriends = client.getFriends(getId(), accessToken);
 	}
 	
+	private void setFriendsString() throws Exception
+	{
+		friends = client.getFriendsString(getId(), accessToken);
+	}
+	
 	public List<OpenGraphUser> getFriends() throws Exception
 	{
 		if (null == userFriends)
 			setFriends();
 		
 		return userFriends;
+	}
+	
+	public String getFriendsString() throws Exception
+	{
+		if (null == friends)
+			setFriendsString();
+		
+		return friends;
 	}
 }

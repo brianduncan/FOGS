@@ -73,7 +73,6 @@ public class FacebookClient {
 			System.out.println(new Timestamp(date1.getTime()));
 			
 			for (int i = 0; i < array.length(); i++) {
-//			for (int i = 0; i < 25; i++) {
 				JSONObject person = array.getJSONObject(i);
 				OpenGraphUser friend = new OpenGraphUser(person.get("id").toString());
 				friends.add(friend);
@@ -90,6 +89,22 @@ public class FacebookClient {
 		}
 		
 		return friends;
+	}
+	
+	protected String getFriendsString(String id, String token) 
+	{
+		String response = "";
+		
+		try {
+			HttpGet request = new HttpGet(API + String.format(API_FRIENDS, id, token));
+			response = client.execute(request, responseHandler);
+			
+			System.out.println("response = " + response);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+		
+		return response;
 	}
 	
 	/*
