@@ -20,13 +20,9 @@ import org.apache.commons.lang.StringUtils;
 
 import edu.sjsu.cmpe297.db.dao.CompanyDAO;
 import edu.sjsu.cmpe297.db.dao.LikesDAO;
-import edu.sjsu.cmpe297.db.dao.ProductDAO;
-import edu.sjsu.cmpe297.db.dao.UsersDAO;
 import edu.sjsu.cmpe297.db.dao.ViewsDAO;
 import edu.sjsu.cmpe297.db.object.Company;
 import edu.sjsu.cmpe297.db.object.Likes;
-import edu.sjsu.cmpe297.db.object.Product;
-import edu.sjsu.cmpe297.db.object.Users;
 import edu.sjsu.cmpe297.db.object.Views;
 import edu.sjsu.cmpe297.fb.OpenGraphUser;
 
@@ -77,7 +73,7 @@ public class FogsCustomerService {
 				  if(friends.size()>0){
 					  //Evaluate the size of the list to be returned
 					  if(StringUtils.isNotEmpty(listsize) 
-							  && this.isNumeric(listsize)){
+							  && FogsCSHelper.isNumeric(listsize)){
 						  flsize = Integer.parseInt(listsize);
 					  }else{
 						  flsize = friends.size();
@@ -123,10 +119,10 @@ public class FogsCustomerService {
 					  }else{
 						  
 						  //Check and add user if not present in users table
-						  checkAndAddUser(Long.parseLong(userid), uname);
+						  FogsCSHelper.checkAndAddUser(Long.parseLong(userid), uname);
 						  
 						  //Check and add product if not present
-						  checkAndAddProduct(Long.parseLong(facebookprodid), prodname, Long.parseLong(compid));
+						  FogsCSHelper.checkAndAddProduct(Long.parseLong(facebookprodid), prodname, Long.parseLong(compid));
 						  
 						  //Check and add product if not existing in db
 						  Views v = new Views(Long.parseLong(userid), Long.parseLong(facebookprodid), new Long(1));
@@ -349,151 +345,5 @@ public class FogsCustomerService {
 		  return jcomps.toString();
 		  
 	  }
-	
-  //This method will be used to get the facebook Id for the company	
-  @GET
-  @Path("/facebookid/{compName}") 
-  @Produces(MediaType.APPLICATION_JSON)
-  public String getFacebookId(@PathParam("compName") String compName){
-	  return "compName";
-  }
-  
-  //This method will be used to get the products sold by the company	
-  @GET
-  @Path("/products/{compId}") 
-  @Produces(MediaType.APPLICATION_JSON)
-  public String getProductsSoldByCompany(@PathParam("compId") String compId){
-	  
-	  return "";
-	  //TODO: This method will return a list	  
-  }
-  
-  
-  //Get products by name
-  @GET
-  @Path("/prodname/{prodName}") 
-  @Produces(MediaType.APPLICATION_JSON)  
-  public String getProductsByName(@PathParam("prodName") String prodName){
-	  return "";
-	  //TODO: This method will return a list
-  }
-  
-  //This REST service interface will help to get the 
-  //product by name and for a particular company.
-  @GET
-  @Path("/prodbycomp/{prodName}/{compId}") 
-  @Produces(MediaType.APPLICATION_JSON) 
-  public String getProductsByNameAndCompany(@PathParam("prodName") String prodName, @PathParam("compId") String compId){
-	  return "";
-	  //TODO: This method will return a list
-  }
-  
-  //Gets friends of users from facebook
-  @GET
-  @Path("/friendsofuser/{uname}") 
-  @Produces(MediaType.APPLICATION_JSON)
-  public List<String> getFriendsOfUser(@PathParam("uName") String uName){
-	  List<String> list = null;
-	  return list;
-	  //TODO: This method will return a list
-  }
-  
-  //Gets the likes from facebook
-  @GET
-  @Path("/facebooklikes/{uname}/{prodName}/{compName}") 
-  @Produces(MediaType.APPLICATION_JSON)
-  public List<String> getFacebookLikesForUserFreind(@PathParam("uName") String uName, @PathParam("prodName") String prodtName, @PathParam("compName") String compName){
-	  List<String> list = null;
-	  return list;
-	  //TODO: This method will return a list  
-  }
-  
-  //Checks if facebook user exists
-  @GET
-  @Path("/facebookuserexists/{facebookId}/{uName}") 
-  @Produces(MediaType.APPLICATION_JSON)
-  public String facebookIdUserExists(@PathParam("facebookId") String facebookId, @PathParam("uName") String uName){
-	  
-	  return "";
-  }
-  
-  //Gets the friends comments for facebook 
-  @GET
-  @Path("/facebookcomts/{uName}/{prodName}/{compName}") 
-  @Produces(MediaType.APPLICATION_JSON)
-  public List<String> getFacebookCommentsForUserFriends(@PathParam("uName") String uName, @PathParam("prodName") String prodName, @PathParam("compName") String compName){
-	  List<String> list = null;
-	  return list;
-	  //TODO: This method will return a list	  
-  }
-  
-  
-  //Check if the string passed is an Long number
-  private boolean isNumeric(String str)  
-  {  
-    try  
-    {  
-        
-    	Long.parseLong(str);  
-    }  
-    catch(NumberFormatException nfe)  
-    {  
-      return false;  
-    }  
-    return true;  
-  }
-  
-  //Check if this user is present in users table and add the user
-  private String checkAndAddUser(Long fbId, String name){
-	  
-	  String ret = "SUCCESS"; 
-	  
-		  
-		  UsersDAO udao = UsersDAO.getInstance();
-		  Users user = new Users(fbId, name);
-		  @SuppressWarnings("unused")
-		Users user1 = new Users(fbId, name);
-		  try {
-			user1 = udao.get(user);
-		} catch (SQLException e) {			
-			e.printStackTrace();
-			//User does not exist in user table, so add the user
-			try {
-				udao.insert(user);
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-				ret = "ERROR";
-			}
-		}
-	  
-	  return ret;	  
-  }
-  
-  //Check if this product is present in product table and add the product
-  private String checkAndAddProduct(Long prodId, String prodName, Long compId ){
-	  String ret = "SUCCESS";
-	  ProductDAO pdao = ProductDAO.getInstance();
-	  
-	  Product prod = new  Product(prodId, prodName, compId);
-	  @SuppressWarnings("unused")
-	  Product prod1 = new  Product(prodId, prodName, compId);
-	  
-		try {
-			prod1 = pdao.get(prod);
-		} catch (SQLException e) {
-			//Prod does not exist in prod table, so add the prod
-			e.printStackTrace();
-			
-			try {
-				pdao.insert(prod);
-			} catch (SQLException e1) {
-				ret = "ERROR";
-				e1.printStackTrace();
-			}
-		}
-	  
-	  return ret;
-  }
 
 }
