@@ -18,8 +18,8 @@ public class UsersDAO extends FogsDatabase implements DatabaseAccessObject<Users
 	
 	private static final String READ_USERS_CMD = "select * from users";
 	private static final String READ_USERS_FOR_ID_CMD = READ_USERS_CMD + " where facebook_id = ?";
-	private static final String INSERT_USERS_CMD = "insert into users (facebook_id, login) values (?, ?)";
-	private static final String UPDATE_USERS_CMD = "update users set facebook_id=?, login=? where facebook_id=?";
+	private static final String INSERT_USERS_CMD = "insert into users (facebook_id, name) values (?, ?)";
+	private static final String UPDATE_USERS_CMD = "update users set facebook_id=?, name=? where facebook_id=?";
 	private static final String DELETE_USERS_CMD = "delete from users where facebook_id=?";
 
 	private UsersDAO() {
@@ -40,9 +40,9 @@ public class UsersDAO extends FogsDatabase implements DatabaseAccessObject<Users
 		ResultSet rs = stmt.executeQuery();
 		
 		while (rs.next()) {
-			Integer facebookId = rs.getInt(1);
-			String login = rs.getString(2);
-			Users u = new Users(facebookId, login);
+			Long facebookId = rs.getLong(1);
+			String name = rs.getString(2);
+			Users u = new Users(facebookId, name);
 			users.add(u);
 		}
 		
@@ -55,14 +55,14 @@ public class UsersDAO extends FogsDatabase implements DatabaseAccessObject<Users
 	@Override
 	public Users get(Users data) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(READ_USERS_FOR_ID_CMD);
-		stmt.setInt(1, data.getFacebookId());
+		stmt.setLong(1, data.getFacebookId());
 		ResultSet rs = stmt.executeQuery();
 		
 		rs.next();
 		
-		Integer facebookId = rs.getInt(1);
-		String login = rs.getString(2);
-		Users u = new Users(facebookId, login);
+		Long facebookId = rs.getLong(1);
+		String name = rs.getString(2);
+		Users u = new Users(facebookId, name);
 		
 		rs.close();
 		stmt.close();
@@ -73,7 +73,7 @@ public class UsersDAO extends FogsDatabase implements DatabaseAccessObject<Users
 	@Override
 	public void insert(Users data) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(INSERT_USERS_CMD);
-		stmt.setInt(1, data.getFacebookId());
+		stmt.setLong(1, data.getFacebookId());
 		stmt.setString(2, data.getLogin());
 		stmt.executeUpdate();
 		stmt.close();
@@ -82,9 +82,9 @@ public class UsersDAO extends FogsDatabase implements DatabaseAccessObject<Users
 	@Override
 	public void update(Users oldData, Users newData) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(UPDATE_USERS_CMD);
-		stmt.setInt(1, newData.getFacebookId());
+		stmt.setLong(1, newData.getFacebookId());
 		stmt.setString(2, newData.getLogin());
-		stmt.setInt(3, oldData.getFacebookId());
+		stmt.setLong(3, oldData.getFacebookId());
 		stmt.executeUpdate();
 		stmt.close();
 	}
@@ -92,7 +92,7 @@ public class UsersDAO extends FogsDatabase implements DatabaseAccessObject<Users
 	@Override
 	public void delete(Users data) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(DELETE_USERS_CMD);
-		stmt.setInt(1, data.getFacebookId());
+		stmt.setLong(1, data.getFacebookId());
 		stmt.executeUpdate();
 		stmt.close();
 	}

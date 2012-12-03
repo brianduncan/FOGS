@@ -40,7 +40,7 @@ public class CompanyDAO extends FogsDatabase implements DatabaseAccessObject<Com
 		ResultSet rs = stmt.executeQuery();
 		
 		while (rs.next()) {
-			Integer facebookId = rs.getInt(1);
+			Long facebookId = rs.getLong(1);
 			String name = rs.getString(2);
 			Company c = new Company(facebookId, name);
 			companies.add(c);
@@ -55,12 +55,12 @@ public class CompanyDAO extends FogsDatabase implements DatabaseAccessObject<Com
 	@Override
 	public Company get(Company data) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(READ_COMPANY_FOR_ID_CMD);
-		stmt.setInt(1, data.getFacebookId());
+		stmt.setLong(1, data.getFacebookId());
 		ResultSet rs = stmt.executeQuery();
 		
 		rs.next();
 		
-		Integer facebookId = rs.getInt(1);
+		Long facebookId = rs.getLong(1);
 		String name = rs.getString(2);
 		Company c = new Company(facebookId, name);
 		
@@ -73,7 +73,7 @@ public class CompanyDAO extends FogsDatabase implements DatabaseAccessObject<Com
 	@Override
 	public void insert(Company data) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(INSERT_COMPANY_CMD);
-		stmt.setInt(1, data.getFacebookId());
+		stmt.setLong(1, data.getFacebookId());
 		stmt.setString(2, data.getName());
 		stmt.executeUpdate();
 		stmt.close(); 
@@ -82,9 +82,9 @@ public class CompanyDAO extends FogsDatabase implements DatabaseAccessObject<Com
 	@Override
 	public void update(Company oldData, Company newData) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(UPDATE_COMPANY_CMD);
-		stmt.setInt(1, newData.getFacebookId());
+		stmt.setLong(1, newData.getFacebookId());
 		stmt.setString(2, newData.getName());
-		stmt.setInt(3, oldData.getFacebookId());
+		stmt.setLong(3, oldData.getFacebookId());
 		stmt.executeUpdate();
 		stmt.close();
 	}
@@ -92,7 +92,7 @@ public class CompanyDAO extends FogsDatabase implements DatabaseAccessObject<Com
 	@Override
 	public void delete(Company data) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(DELETE_COMPANY_CMD);
-		stmt.setInt(1, data.getFacebookId());
+		stmt.setLong(1, data.getFacebookId());
 		stmt.executeUpdate();
 		stmt.close();
 	}

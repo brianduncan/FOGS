@@ -1,16 +1,13 @@
 package edu.sjsu.cmpe297.db.object;
 
-public class Views implements DatabaseObject {
-
+public class Likes implements DatabaseObject{
 	// member variables
 	private Long userId;
 	private Long productId;
-	private Long viewCount;
 	
-	public Views(Long userId, Long productId, Long viewCount) {
+	public Likes(Long userId, Long productId) {
 		this.userId = userId;
 		this.productId = productId;
-		this.viewCount = viewCount;
 	}
 	
 	// accessor methods
@@ -22,10 +19,6 @@ public class Views implements DatabaseObject {
 		return productId;
 	}
 	
-	public Long getViewCount() {
-		return viewCount;
-	}
-	
 	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
@@ -34,12 +27,16 @@ public class Views implements DatabaseObject {
 		this.productId = productId;
 	}
 	
-	public void setViewCount(Long viewCount) {
-		this.viewCount = viewCount;
+	@Override
+	public boolean equals(Object obj)
+	{
+		Likes like = (Likes)obj;
+
+		if(like.getUserId().equals(userId) && like.getProductId().equals(productId))
+		{
+			return true;
+		}
+
+		return false;
 	}
-	
-	public void incrementViewCount() {
-		viewCount++;
-	}
-	
 }

@@ -42,9 +42,9 @@ public class ViewsDAO extends FogsDatabase implements DatabaseAccessObject<Views
 		ResultSet rs = stmt.executeQuery();
 		
 		while (rs.next()) {
-			Integer userId = rs.getInt(1);
-			Integer productId = rs.getInt(2);
-			Integer viewCount = rs.getInt(3);
+			Long userId = rs.getLong(1);
+			Long productId = rs.getLong(2);
+			Long viewCount = rs.getLong(3);
 			Views v = new Views(userId, productId, viewCount);
 			views.add(v);
 		}
@@ -58,15 +58,15 @@ public class ViewsDAO extends FogsDatabase implements DatabaseAccessObject<Views
 	@Override
 	public Views get(Views data) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(READ_VIEWS_FOR_USER_AND_PRODUCT_CMD);
-		stmt.setInt(1, data.getUserId());
-		stmt.setInt(2, data.getProductId());
+		stmt.setLong(1, data.getUserId());
+		stmt.setLong(2, data.getProductId());
 		ResultSet rs = stmt.executeQuery();
 		
 		rs.next();
 		
-		Integer userId = rs.getInt(1);
-		Integer productId = rs.getInt(2);
-		Integer viewCount = rs.getInt(3);
+		Long userId = rs.getLong(1);
+		Long productId = rs.getLong(2);
+		Long viewCount = rs.getLong(3);
 		Views v = new Views(userId, productId, viewCount);
 		
 		rs.close();
@@ -75,16 +75,16 @@ public class ViewsDAO extends FogsDatabase implements DatabaseAccessObject<Views
 		return v;
 	}
 	
-	public List<Views> getViewsForUser(Integer userId) throws SQLException {
+	public List<Views> getViewsForUser(Long userId) throws SQLException {
 		List<Views> views = new ArrayList<Views>();
 		
 		PreparedStatement stmt = con.prepareStatement(READ_VIEWS_FOR_USER_CMD);
-		stmt.setInt(1, userId);
+		stmt.setLong(1, userId);
 		ResultSet rs = stmt.executeQuery();
 		
 		while (rs.next()) {
-			Integer productId = rs.getInt(2);
-			Integer viewCount = rs.getInt(3);
+			Long productId = rs.getLong(2);
+			Long viewCount = rs.getLong(3);
 			Views v = new Views(userId, productId, viewCount);
 			views.add(v);
 		}
@@ -95,16 +95,16 @@ public class ViewsDAO extends FogsDatabase implements DatabaseAccessObject<Views
 		return views;
 	}
 	
-	public List<Views> getViewsForProduct(Integer productId) throws SQLException {
+	public List<Views> getViewsForProduct(Long productId) throws SQLException {
 		List<Views> views = new ArrayList<Views>();
 		
 		PreparedStatement stmt = con.prepareStatement(READ_VIEWS_FOR_PRODUCT_CMD);
-		stmt.setInt(1, productId);
+		stmt.setLong(1, productId);
 		ResultSet rs = stmt.executeQuery();
 		
 		while (rs.next()) {
-			Integer userId = rs.getInt(1);
-			Integer viewCount = rs.getInt(3);
+			Long userId = rs.getLong(1);
+			Long viewCount = rs.getLong(3);
 			Views v = new Views(userId, productId, viewCount);
 			views.add(v);
 		}
@@ -118,9 +118,9 @@ public class ViewsDAO extends FogsDatabase implements DatabaseAccessObject<Views
 	@Override
 	public void insert(Views data) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(INSERT_VIEWS_CMD);
-		stmt.setInt(1, data.getUserId());
-		stmt.setInt(2, data.getProductId());
-		stmt.setInt(3, data.getViewCount());
+		stmt.setLong(1, data.getUserId());
+		stmt.setLong(2, data.getProductId());
+		stmt.setLong(3, data.getViewCount());
 		stmt.executeUpdate();
 		stmt.close();
 	}
@@ -128,9 +128,9 @@ public class ViewsDAO extends FogsDatabase implements DatabaseAccessObject<Views
 	@Override
 	public void update(Views oldData, Views newData) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(UPDATE_VIEWCOUNT_CMD);
-		stmt.setInt(1, newData.getViewCount());
-		stmt.setInt(2, oldData.getUserId());
-		stmt.setInt(3, oldData.getProductId());
+		stmt.setLong(1, newData.getViewCount());
+		stmt.setLong(2, oldData.getUserId());
+		stmt.setLong(3, oldData.getProductId());
 		stmt.executeUpdate();
 		stmt.close();
 	}
@@ -138,8 +138,8 @@ public class ViewsDAO extends FogsDatabase implements DatabaseAccessObject<Views
 	@Override
 	public void delete(Views data) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(DELETE_VIEWS_CMD);
-		stmt.setInt(1, data.getUserId());
-		stmt.setInt(2, data.getProductId());
+		stmt.setLong(1, data.getUserId());
+		stmt.setLong(2, data.getProductId());
 		stmt.executeUpdate();
 		stmt.close();
 	}

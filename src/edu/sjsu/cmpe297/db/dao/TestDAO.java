@@ -15,15 +15,16 @@ public class TestDAO {
 		
 		try {
 			//test insert
-			Company c = new Company(2, "tester");
+			Company c = new Company(new Long(2), "tester company");
 			companyDb.insert(c);
 			
+			/*
 			//test get
 			Company cToGet = companyDb.get(c);
 			System.out.println(cToGet.getFacebookId() + " " + cToGet.getName());
 			
 			//test update
-			Company cToUpdate = new Company(99,"mike_company");
+			Company cToUpdate = new Company(new Long(99),"mike_company");
 			companyDb.update(cToGet, cToUpdate);
 			
 			//test delete
@@ -34,6 +35,7 @@ public class TestDAO {
 			for (Company company : companies) {
 				System.out.println(company.getFacebookId() + " " + company.getName());
 			}
+			*/
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
