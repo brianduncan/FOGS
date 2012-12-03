@@ -11,13 +11,10 @@ import java.util.List;
 
 import edu.sjsu.cmpe297.db.object.Users;
 
-public class UsersDAO implements DatabaseAccessObject<Users>{
+public class UsersDAO extends FogsDatabase implements DatabaseAccessObject<Users>{
 	
 	// singleton
 	private static final UsersDAO INSTANCE = new UsersDAO();
-	
-	private static final String dbUrl = "jdbc:mysql://luxor.svl.ibm.com:3306/cmpe297";
-	private Connection con;
 	
 	private static final String READ_USERS_CMD = "select * from users";
 	private static final String READ_USERS_FOR_ID_CMD = READ_USERS_CMD + " where facebook_id = ?";
@@ -28,16 +25,7 @@ public class UsersDAO implements DatabaseAccessObject<Users>{
 	private UsersDAO() {
 		super();
 		
-		try {
-			Class.forName("com.mysql.jdbc.Driver").newInstance();
-			con = DriverManager.getConnection(dbUrl, "cmpe297", "cmpe297");
-		}
-		catch (SQLException e) {
-			e.printStackTrace();
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
+		con = getDatabaseConnection();
 	}
 	
 	public static synchronized UsersDAO getInstance() {

@@ -11,13 +11,10 @@ import java.util.List;
 
 import edu.sjsu.cmpe297.db.object.Views;
 
-public class ViewsDAO implements DatabaseAccessObject<Views>{
+public class ViewsDAO extends FogsDatabase implements DatabaseAccessObject<Views>{
 	
 	// singleton
 	private static final ViewsDAO INSTANCE = new ViewsDAO();
-	
-	private static final String dbUrl = "jdbc:mysql://luxor.svl.ibm.com:3306/cmpe297";
-	private Connection con;
 	
 	private static final String READ_VIEWS_CMD = "select * from views";
 	private static final String READ_VIEWS_FOR_USER_CMD = READ_VIEWS_CMD + " where user_id = ?";
@@ -30,16 +27,7 @@ public class ViewsDAO implements DatabaseAccessObject<Views>{
 	private ViewsDAO() {
 		super();
 		
-		try {
-			Class.forName("com.mysql.jdbc.Driver").newInstance();
-			con = DriverManager.getConnection(dbUrl, "cmpe297", "cmpe297");
-		}
-		catch (SQLException e) {
-			e.printStackTrace();
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
+		con = getDatabaseConnection();
 	}
 	
 	public static synchronized ViewsDAO getInstance() {

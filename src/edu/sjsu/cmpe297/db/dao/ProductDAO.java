@@ -11,13 +11,10 @@ import java.util.List;
 
 import edu.sjsu.cmpe297.db.object.Product;
 
-public class ProductDAO implements DatabaseAccessObject<Product>{
+public class ProductDAO extends FogsDatabase implements DatabaseAccessObject<Product>{
 	
 	// singleton
 	private static final ProductDAO INSTANCE = new ProductDAO();
-	
-	private static final String dbUrl = "jdbc:mysql://luxor.svl.ibm.com:3306/cmpe297";
-	private Connection con;
 	
 	private static final String READ_PRODUCT_CMD = "select * from product";
 	private static final String READ_PRODUCT_FOR_ID_CMD = READ_PRODUCT_CMD + " where facebook_id = ?";
@@ -29,16 +26,7 @@ public class ProductDAO implements DatabaseAccessObject<Product>{
 	private ProductDAO() {
 		super();
 		
-		try {
-			Class.forName("com.mysql.jdbc.Driver").newInstance();
-			con = DriverManager.getConnection(dbUrl, "cmpe297", "cmpe297");
-		}
-		catch (SQLException e) {
-			e.printStackTrace();
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
+        con = getDatabaseConnection();
 	}
 	
 	public static synchronized ProductDAO getInstance() {

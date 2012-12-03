@@ -11,13 +11,10 @@ import java.util.List;
 
 import edu.sjsu.cmpe297.db.object.Company;
 
-public class CompanyDAO implements DatabaseAccessObject<Company>{
+public class CompanyDAO extends FogsDatabase implements DatabaseAccessObject<Company>{
 	
 	// singleton
 	private static final CompanyDAO INSTANCE = new CompanyDAO();
-	
-	private static final String dbUrl = "jdbc:mysql://luxor.svl.ibm.com:3306/cmpe297";
-	private Connection con;
 	
 	private static final String READ_COMPANY_CMD = "select * from company";
 	private static final String READ_COMPANY_FOR_ID_CMD = READ_COMPANY_CMD + " where facebook_id = ?";
@@ -28,16 +25,7 @@ public class CompanyDAO implements DatabaseAccessObject<Company>{
 	private CompanyDAO() {
 		super();
 		
-		try {
-			Class.forName("com.mysql.jdbc.Driver").newInstance();
-			con = DriverManager.getConnection(dbUrl, "cmpe297", "cmpe297");
-		}
-		catch (SQLException e) {
-			e.printStackTrace();
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
+		con = getDatabaseConnection();
 	}
 	
 	public static synchronized CompanyDAO getInstance() {
