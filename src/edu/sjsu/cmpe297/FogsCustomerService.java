@@ -20,9 +20,11 @@ import org.apache.commons.lang.StringUtils;
 
 import edu.sjsu.cmpe297.db.dao.CompanyDAO;
 import edu.sjsu.cmpe297.db.dao.LikesDAO;
+import edu.sjsu.cmpe297.db.dao.UsersDAO;
 import edu.sjsu.cmpe297.db.dao.ViewsDAO;
 import edu.sjsu.cmpe297.db.object.Company;
 import edu.sjsu.cmpe297.db.object.Likes;
+import edu.sjsu.cmpe297.db.object.Users;
 import edu.sjsu.cmpe297.db.object.Views;
 import edu.sjsu.cmpe297.fb.OpenGraphUser;
 
@@ -43,6 +45,8 @@ import edu.sjsu.cmpe297.fb.OpenGraphUser;
 //Sets the path to base URL + /fogs
 @Path("/fogs")
 public class FogsCustomerService {
+	
+	private String ACCESS_TOKEN = "AAAAAAITEghMBAFo6p9GsqKWSci0i4Y5YAX4V9bqEDQX6Ng0lkaW4R9WQm5BlDko7IPuwMe7K6GtNuGFCZCYB7UHZCVd1OP4PWiHTwKUwZDZD";
 	
 	//This method will be used to get the friends that navigated the
 	//same product. It will pass back the configurable number of friends.
@@ -275,7 +279,7 @@ public class FogsCustomerService {
 			  {
 				  //Get list of user's facebook friends
 				  OpenGraphUser openGraphUser = new OpenGraphUser(userid);
-				  openGraphUser.setAccessToken("AAAAAAITEghMBANjAKnSblZAfZCf2gHzUV9bj43hEKzxz3B5NbZBNVZAGXgBgX66HJ9N2s2rhK3H25j9A7ffSuiLcezUV4t0lmzBY7kPvKgZDZD");
+				  openGraphUser.setAccessToken(ACCESS_TOKEN);
 				  List<OpenGraphUser> friendsList = openGraphUser.getFriends();
 				  
 				  //If friends returned for the user
@@ -352,7 +356,7 @@ public class FogsCustomerService {
 			  {
 				  //Get string of user's facebook friends
 				  OpenGraphUser openGraphUser = new OpenGraphUser(userid);
-				  openGraphUser.setAccessToken("AAAAAAITEghMBAAQrmHTYcfFta637ks4ZCgWuiVMuovxPXzvPcF5L3NRJtUpO6t11cxTfk2Bqb9kMZCEw00W3OIBot70ejhPJPAP1mCmCbaZCxfCqZCZAJ");
+				  openGraphUser.setAccessToken(ACCESS_TOKEN);
 				  String friends = openGraphUser.getFriendsString();
 				  
 				  //If friends returned for the user
@@ -406,7 +410,98 @@ public class FogsCustomerService {
 		return retdata;
 	  }
 	
-	
+	 //This method will return the number of likes for a product by the user's friends
+	  @GET
+	  @Path("/friendsliked3/{userid}/{facebookprodid}") 
+	  @Produces(MediaType.APPLICATION_JSON)
+	  public String getFriendsLikesProd3(@PathParam("userid") String userid, @PathParam("facebookprodid") String facebookprodid) 
+	  {			
+		  String retdata = "";
+		  JSONObject j = new JSONObject();
+		  
+		  //Validate that all the fields have been passed
+		  if(StringUtils.isEmpty(userid) || StringUtils.isEmpty(facebookprodid)) 
+		  {
+			  j.put("101", "REQUIRED PARAMETER FIELDS MISSING");
+			  retdata = j.toString();	    	
+		  }
+		  else 
+		  {
+			  try 
+			  {
+				  //Get string of user's facebook friends
+				  OpenGraphUser openGraphUser = new OpenGraphUser(userid);
+				  openGraphUser.setAccessToken(ACCESS_TOKEN);
+				  String friends = openGraphUser.getFriendsString();
+				  
+				  //Define list for friends who are registered users
+				  List<String> friendWhoIsUserList = new ArrayList<String>();
+				  
+				  //Define list for open graph users who like the product
+				  List<OpenGraphUser> oguList = new ArrayList<OpenGraphUser>(); //<----Mike, this is the list of open graph users for the views code
+				  
+				  //If friends returned for the user
+				  if(friends.toCharArray().length != 0)
+				  {
+					  JSONObject jusers = new JSONObject();
+
+					  //Get list of existing users
+					  UsersDAO usersDAO = UsersDAO.getInstance();
+				      List<Users> userList = usersDAO.list();
+				      
+				      //Determine which friends are registered users
+				      for(int i = 0; i < userList.size(); i++)
+					  {
+				    	  if(!userid.contains(String.valueOf(userList.get(i).getFacebookId())) && friends.contains(String.valueOf(userList.get(i).getFacebookId())))
+						  {
+							  friendWhoIsUserList.add(String.valueOf(userList.get(i).getFacebookId()));
+						  }
+					  }
+					
+					  //Count for number of friends who like the product
+					  int count = 0;
+					  
+					  //Determine which registered friends like the product
+					  for(int i = 0; i < friendWhoIsUserList.size(); i++)
+				      {
+						  String likes = openGraphUser.getFriendLikes(friendWhoIsUserList.get(i));
+						  
+						  if(likes.contains(String.valueOf(facebookprodid)))
+						  {
+							  count++;
+							  OpenGraphUser ogu = new OpenGraphUser(friendWhoIsUserList.get(i));
+							  oguList.add(ogu);
+							  jusers.put(count, ogu.toJson());
+						  }
+					  }
+					  
+					  if(count > 0)
+					  {
+						  retdata = jusers.toString();
+					  }
+					  else
+					  {
+						  j.put("10", "NO FRIENDS FOUND");
+						  retdata = j.toString();
+					  }
+				  }
+				  else
+				  {
+					  j.put("10", "NO FRIENDS FOUND");
+					  retdata = j.toString();
+				  }
+			} 
+			catch (Exception e) 
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				j.put("100", "ERROR RETRIEVING DATA");
+				retdata = j.toString();
+			}
+	    }
+		  
+		return retdata;
+	  }
 	
 	 //This method will be used to get the facebook Id for the company	
 	  @GET
