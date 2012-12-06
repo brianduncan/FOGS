@@ -16,6 +16,7 @@ public class OpenGraphUser {
 	
 	private FacebookClient client;
 	private OpenGraphLikes userLikes;
+	private OpenGraphLikes friendLikes;
 	private List<OpenGraphUser> userFriends;
 	private String friends;
 	
@@ -96,6 +97,25 @@ public class OpenGraphUser {
 			setLikes();
 		
 		return userLikes.likes(id);
+	}
+	
+	public String getLikesString() throws Exception
+	{
+		if (null == userLikes)
+			setLikes();
+		
+		return userLikes.toJson();
+	}
+	
+	private void setFriendLikes(String id) throws Exception
+	{	
+		friendLikes = new OpenGraphLikes(client.getLikes(id, accessToken));
+	}
+	
+	public String getFriendLikes(String id) throws Exception
+	{
+		setFriendLikes(id);
+		return friendLikes.toJson();
 	}
 	
 	private void setFriends() throws Exception
