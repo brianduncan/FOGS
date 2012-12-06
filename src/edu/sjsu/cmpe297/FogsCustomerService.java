@@ -169,7 +169,7 @@ public class FogsCustomerService {
 			  {
 				  //Get string of user's facebook friends
 				  OpenGraphUser openGraphUser = new OpenGraphUser(userid);
-				  openGraphUser.setAccessToken("AAAAAAITEghMBAAQrmHTYcfFta637ks4ZCgWuiVMuovxPXzvPcF5L3NRJtUpO6t11cxTfk2Bqb9kMZCEw00W3OIBot70ejhPJPAP1mCmCbaZCxfCqZCZAJ");
+				  openGraphUser.setAccessToken("AAAAAAITEghMBAHCl2sjpZBA1IYnEPmAukFprwaEuA5XhRlnZA21JHzoHgZBZAErq8ahV1g9sda9KSccfrUfKEu6r4wgJ9LlDt0BkWDSzwySoJb9R5hjH");
 				  String friends = openGraphUser.getFriendsString();
 				  
 				  //If friends returned for the user
@@ -180,6 +180,13 @@ public class FogsCustomerService {
 					  //Get list of people who viewed the product
 					  ViewsDAO viewsDAO = ViewsDAO.getInstance();
 					  List<Views> productViewList = viewsDAO.getViewsForProduct(Long.parseLong(facebookprodid));
+					  
+					//Create a hasmap of the view that is returned
+					  HashMap<Long, Long> upmap = new HashMap<Long, Long>();
+					  for(int i=0; i<productViewList.size(); i++){
+						  Views v = productViewList.get(i);
+						  upmap.put(v.getUserId(), v.getViewCount());						  
+					  }
 					
 					  //Count for number of friends who viewed the product
 					  int count = 0;
@@ -204,6 +211,28 @@ public class FogsCustomerService {
 						  j.put("10", "NO FRIENDS FOUND");
 						  retdata = j.toString();
 					  }
+					  
+					  
+					  //Insert/Update the views record for the user for this product if user already does not exist in the db
+					  if(upmap.containsKey(userid)){
+						  //User exist in the db for viewing the product
+						  Views v = new Views(Long.parseLong(userid), Long.parseLong(facebookprodid), null);
+						  v = viewsDAO.get(v);
+						  Views vnew = new Views(v.getUserId(), v.getProductId(), new Long(v.getViewCount().intValue() + 1));						 
+						  viewsDAO.update(v, vnew);
+					  }else{
+						  
+						  //Check and add user if not present in users table
+						  //FogsCSHelper.checkAndAddUser(Long.parseLong(userid), userid);
+						  
+						  //Check and add product if not present
+						  //FogsCSHelper.checkAndAddProduct(Long.parseLong(facebookprodid), facebookprodid, Long.parseLong(compid));
+						  
+						  //Check and add product if not existing in db
+						  Views v = new Views(Long.parseLong(userid), Long.parseLong(facebookprodid), new Long(1));
+						  viewsDAO.insert(v);
+					  }
+					  
 				  }
 				  else
 				  {
