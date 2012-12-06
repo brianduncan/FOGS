@@ -67,6 +67,7 @@ public class FogsCustomerService {
 			  try {
 				  //Get facebook freinds for the user
 				  OpenGraphUser ogu = new OpenGraphUser(userid);
+				  ogu.setAccessToken("AAAAAAITEghMBAAQrmHTYcfFta637ks4ZCgWuiVMuovxPXzvPcF5L3NRJtUpO6t11cxTfk2Bqb9kMZCEw00W3OIBot70ejhPJPAP1mCmCbaZCxfCqZCZAJ");
 				  List<OpenGraphUser> friends = ogu.getFriends();
 				  int flsize = 0;
 				  //If friends returned for the user
@@ -243,7 +244,7 @@ public class FogsCustomerService {
 			  {
 				  //Get string of user's facebook friends
 				  OpenGraphUser openGraphUser = new OpenGraphUser(userid);
-				  openGraphUser.setAccessToken("AAAAAAITEghMBANjAKnSblZAfZCf2gHzUV9bj43hEKzxz3B5NbZBNVZAGXgBgX66HJ9N2s2rhK3H25j9A7ffSuiLcezUV4t0lmzBY7kPvKgZDZD");
+				  openGraphUser.setAccessToken("AAAAAAITEghMBAAQrmHTYcfFta637ks4ZCgWuiVMuovxPXzvPcF5L3NRJtUpO6t11cxTfk2Bqb9kMZCEw00W3OIBot70ejhPJPAP1mCmCbaZCxfCqZCZAJ");
 				  String friends = openGraphUser.getFriendsString();
 				  
 				  //If friends returned for the user
