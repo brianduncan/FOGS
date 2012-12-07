@@ -6,6 +6,7 @@ package edu.sjsu.cmpe297;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.ws.rs.GET;
@@ -47,6 +48,7 @@ import edu.sjsu.cmpe297.fb.OpenGraphUser;
 public class FogsCustomerService {
 	
 	private String ACCESS_TOKEN = "AAAAAAITEghMBAHz5snoCOzZCErLDqA1efOmbgb02sJM3CorwrOJXKbZA7JPz63hzzYuCQtlmPwN4xuFdSbjXAs3ZAKkIL6jWf3EOrF0YwdjULPFgZB51";
+	private String RAHUL_ACCESS_TOKEN = "AAAAAAITEghMBAM9AJWZAYlSQO2ZBxZAmUcIo2UXip6POJaex1ZA7SRMHOzxRCOIxR5kmNxxDYZCEiZB7mGkkvKyfc5CGZBCP50ext9F2d0e5meIO94loNbs";
 	
 	//This method will be used to get the friends that navigated the
 	//same product. It will pass back the configurable number of friends.
@@ -71,7 +73,7 @@ public class FogsCustomerService {
 			  try {
 				  //Get facebook freinds for the user
 				  OpenGraphUser ogu = new OpenGraphUser(userid);
-				  ogu.setAccessToken("AAAAAAITEghMBAAQrmHTYcfFta637ks4ZCgWuiVMuovxPXzvPcF5L3NRJtUpO6t11cxTfk2Bqb9kMZCEw00W3OIBot70ejhPJPAP1mCmCbaZCxfCqZCZAJ");
+				  ogu.setAccessToken(RAHUL_ACCESS_TOKEN);
 				  List<OpenGraphUser> friends = ogu.getFriends();
 				  int flsize = 0;
 				  //If friends returned for the user
@@ -154,7 +156,7 @@ public class FogsCustomerService {
 	  
 		//This method will return the number of likes for a product by the user's friends
 	  @GET
-	  @Path("/friendsview2/{userid}/{facebookprodid}") 
+	  @Path("/friendsviewretall/{userid}/{facebookprodid}") 
 	  @Produces(MediaType.APPLICATION_JSON)
 	  public String getFriendsVisitedProd2(@PathParam("userid") String userid, @PathParam("facebookprodid") String facebookprodid) 
 	  {
@@ -173,7 +175,7 @@ public class FogsCustomerService {
 			  {
 				  //Get string of user's facebook friends
 				  OpenGraphUser openGraphUser = new OpenGraphUser(userid);
-				  openGraphUser.setAccessToken("AAAAAAITEghMBAHz5snoCOzZCErLDqA1efOmbgb02sJM3CorwrOJXKbZA7JPz63hzzYuCQtlmPwN4xuFdSbjXAs3ZAKkIL6jWf3EOrF0YwdjULPFgZB51");
+				  openGraphUser.setAccessToken(RAHUL_ACCESS_TOKEN);
 				  String friends = openGraphUser.getFriendsString();
 				  
 				  //If friends returned for the user
@@ -273,6 +275,131 @@ public class FogsCustomerService {
 		  
 		return retdata;
 	  }
+	  
+	  
+	  
+	//This method will return the number of likes for a product by the user's friends
+	  @GET
+	  @Path("/friendsviewretlimited/{userid}/{facebookprodid}/{retcount}") 
+	  @Produces(MediaType.APPLICATION_JSON)
+	  public String getFriendsVisitedProd3(@PathParam("userid") String userid, @PathParam("facebookprodid") String facebookprodid, @PathParam("retcount") String retcount) 
+	  {
+		  String retdata = "";
+		  JSONObject j = new JSONObject();
+		  
+		  //Validate that all the fields have been passed
+		  if(StringUtils.isEmpty(userid) || StringUtils.isEmpty(facebookprodid)) 
+		  {
+			  j.put("101", "REQUIRED PARAMETER FIELDS MISSING");
+			  retdata = j.toString();	    	
+		  }
+		  else 
+		  {
+			  try 
+			  {
+				  //Get string of user's facebook friends
+				  OpenGraphUser openGraphUser = new OpenGraphUser(userid);
+				  openGraphUser.setAccessToken(RAHUL_ACCESS_TOKEN);
+				  String friends = openGraphUser.getFriendsString();
+				  
+				  //If friends returned for the user
+				  if(friends.toCharArray().length != 0)
+				  {
+					  JSONObject jusers = new JSONObject();
+
+					  //Get list of people who viewed the product
+					  ViewsDAO viewsDAO = ViewsDAO.getInstance();
+					  List<Views> productViewList = viewsDAO.getViewsForProduct(Long.parseLong(facebookprodid));
+					
+					  //Count for number of friends who viewed the product
+					  int count = 0;
+					  
+					  //Determine whether any of the user's friends viewed the product
+					  for(int i = 0; i < productViewList.size(); i++)
+					  {
+						  if(friends.contains(String.valueOf(productViewList.get(i).getUserId())))
+						  {
+							  count++;
+							  OpenGraphUser ogu = new OpenGraphUser(String.valueOf(productViewList.get(i).getUserId()));
+							  jusers.put(count, ogu.toJson());
+						  }
+					  }
+					  
+					  
+
+					  if(count > 0)
+					  {
+						  
+						  //If return count is specified then check the value to be returned
+						  if((StringUtils.isNotEmpty(retcount)) && (count > Integer.valueOf(retcount))){
+							  
+							  JSONObject limitedjusers = new JSONObject();
+							  
+							  @SuppressWarnings("rawtypes")
+							  Iterator iter = jusers.keys();
+							  int jusercount = 0;
+							  while(iter.hasNext()){
+								  
+								   if(jusercount == Integer.valueOf(retcount)){
+									   break;
+								   }
+								  
+							        String key = (String)iter.next();
+							        String value = jusers.getString(key);
+							        limitedjusers.put(key,value);
+							        jusercount++;						        
+							    }
+							  
+							  retdata = limitedjusers.toString();
+							  
+						  }else{
+						  
+							  retdata = jusers.toString();
+						  }
+					  
+					  
+					  }
+					  else
+					  {
+						  j.put("10", "NO FRIENDS FOUND");
+						  retdata = j.toString();
+					  }
+					  
+					  
+					  
+					  Views view = new Views(Long.valueOf(userid), Long.valueOf(facebookprodid), 1L);
+					  
+					  if(productViewList.contains(view))
+					  {
+						  view.incrementViewCount();
+						  viewsDAO.update(productViewList.get(productViewList.indexOf(view)), view);
+					  }
+					  else
+					  {
+						  viewsDAO.insert(view);
+					  }
+					  
+				  }
+				  else
+				  {
+					  j.put("10", "NO FRIENDS FOUND");
+					  retdata = j.toString();
+				  }
+			} 
+			catch (Exception e) 
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				j.put("100", "ERROR RETRIEVING DATA");
+				retdata = j.toString();
+			}
+	    }
+		  
+		return retdata;
+	  }
+	  
+	  
+	  
 	  
 	  
 	  
