@@ -22,16 +22,29 @@ public class CompanyDAO extends FogsDatabase implements DatabaseAccessObject<Com
 	private static final String UPDATE_COMPANY_CMD = "update company set facebook_id=?, name=? where facebook_id=?";
 	private static final String DELETE_COMPANY_CMD = "delete from company where facebook_id=?";
 
+	/**
+	 * constructor
+	 */
 	private CompanyDAO() {
 		super();
 		
 		con = getDatabaseConnection();
 	}
 	
+	/**
+	 * get singleton instance of CompanyDAO
+	 * 
+	 * @return CompanyDAO
+	 */
 	public static synchronized CompanyDAO getInstance() {
 		return INSTANCE;
 	}
 	
+	/**
+	 * lists all companies
+	 * 
+	 * @return List<Company>
+	 */
 	@Override
 	public List<Company> list() throws SQLException {
 		List<Company> companies = new ArrayList<Company>();
@@ -52,6 +65,12 @@ public class CompanyDAO extends FogsDatabase implements DatabaseAccessObject<Com
 		return companies;
 	}
 
+	/**
+	 * gets specific company
+	 * 
+	 * @param data
+	 * @return Company
+	 */
 	@Override
 	public Company get(Company data) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(READ_COMPANY_FOR_ID_CMD);
@@ -71,6 +90,11 @@ public class CompanyDAO extends FogsDatabase implements DatabaseAccessObject<Com
 		return c;
 	}
 
+	/**
+	 * inserts new company
+	 * 
+	 * @param data
+	 */
 	@Override
 	public void insert(Company data) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(INSERT_COMPANY_CMD);
@@ -80,6 +104,12 @@ public class CompanyDAO extends FogsDatabase implements DatabaseAccessObject<Com
 		stmt.close(); 
 	}
 
+	/**
+	 * updates existing company data
+	 * 
+	 * @param oldData
+	 * @param newData
+	 */
 	@Override
 	public void update(Company oldData, Company newData) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(UPDATE_COMPANY_CMD);
@@ -90,6 +120,11 @@ public class CompanyDAO extends FogsDatabase implements DatabaseAccessObject<Com
 		stmt.close();
 	}
 
+	/**
+	 * deletes company
+	 * 
+	 * @param data
+	 */
 	@Override
 	public void delete(Company data) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(DELETE_COMPANY_CMD);

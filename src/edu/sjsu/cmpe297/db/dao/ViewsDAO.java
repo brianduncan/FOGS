@@ -25,16 +25,29 @@ public class ViewsDAO extends FogsDatabase implements DatabaseAccessObject<Views
 	private static final String DELETE_VIEWS_CMD = "delete from views where user_id=? and product_id=?";
 	private static final String DELETE_VIEWS_ALL_CMD = "delete from views";
 
+	/**
+	 * constructor
+	 */
 	private ViewsDAO() {
 		super();
 		
 		con = getDatabaseConnection();
 	}
 	
+	/**
+	 * get singleton instance of ViewsDAO
+	 * 
+	 * @return ViewsDAO
+	 */
 	public static synchronized ViewsDAO getInstance() {
 		return INSTANCE;
 	}
 	
+	/**
+	 * lists all views
+	 * 
+	 * @return List<Views>
+	 */
 	@Override
 	public List<Views> list() throws SQLException {
 		List<Views> views = new ArrayList<Views>();
@@ -56,6 +69,12 @@ public class ViewsDAO extends FogsDatabase implements DatabaseAccessObject<Views
 		return views;
 	}
 
+	/**
+	 * gets specific view
+	 * 
+	 * @param data
+	 * @return Views
+	 */
 	@Override
 	public Views get(Views data) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(READ_VIEWS_FOR_USER_AND_PRODUCT_CMD);
@@ -78,6 +97,13 @@ public class ViewsDAO extends FogsDatabase implements DatabaseAccessObject<Views
 		return v;
 	}
 	
+	/**
+	 * gets all views for a specific user
+	 * 
+	 * @param userId
+	 * @return List<Views>
+	 * @throws SQLException
+	 */
 	public List<Views> getViewsForUser(Long userId) throws SQLException {
 		List<Views> views = new ArrayList<Views>();
 		
@@ -98,6 +124,13 @@ public class ViewsDAO extends FogsDatabase implements DatabaseAccessObject<Views
 		return views;
 	}
 	
+	/**
+	 * gets all views for a specific product
+	 * 
+	 * @param productId
+	 * @return List<Views>
+	 * @throws SQLException
+	 */
 	public List<Views> getViewsForProduct(Long productId) throws SQLException {
 		List<Views> views = new ArrayList<Views>();
 		
@@ -118,6 +151,11 @@ public class ViewsDAO extends FogsDatabase implements DatabaseAccessObject<Views
 		return views;
 	}
 
+	/**
+	 * inserts new view
+	 * 
+	 * @param data
+	 */
 	@Override
 	public void insert(Views data) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(INSERT_VIEWS_CMD);
@@ -128,6 +166,12 @@ public class ViewsDAO extends FogsDatabase implements DatabaseAccessObject<Views
 		stmt.close();
 	}
 
+	/**
+	 * updates existing views data
+	 * 
+	 * @param oldData
+	 * @param newData
+	 */
 	@Override
 	public void update(Views oldData, Views newData) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(UPDATE_VIEWCOUNT_CMD);
@@ -138,6 +182,11 @@ public class ViewsDAO extends FogsDatabase implements DatabaseAccessObject<Views
 		stmt.close();
 	}
 
+	/**
+	 * deletes view
+	 * 
+	 * @param data
+	 */
 	@Override
 	public void delete(Views data) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(DELETE_VIEWS_CMD);
@@ -147,6 +196,10 @@ public class ViewsDAO extends FogsDatabase implements DatabaseAccessObject<Views
 		stmt.close();
 	}
 	
+	/**
+	 * deletes all views
+	 * 
+	 */
 	public void deleteAllViews() throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(DELETE_VIEWS_ALL_CMD);
 		stmt.executeUpdate();

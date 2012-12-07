@@ -27,6 +27,9 @@ public class LikesDAO implements DatabaseAccessObject<Likes>{
 	private static final String INSERT_LIKES_CMD = "insert into likes (user_id, product_id) values (?, ?)";
 	private static final String DELETE_LIKES_CMD = "delete from likes where user_id=? and product_id=?";
 
+	/**
+	 * constructor
+	 */
 	private LikesDAO() {
 		super();
 		
@@ -42,10 +45,20 @@ public class LikesDAO implements DatabaseAccessObject<Likes>{
 		}
 	}
 	
+	/**
+	 * get singleton instance of LikesDAO
+	 * 
+	 * @return LikesDAO
+	 */
 	public static synchronized LikesDAO getInstance() {
 		return INSTANCE;
 	}
 	
+	/**
+	 * lists all likes
+	 * 
+	 * @return List<Likes>
+	 */
 	@Override
 	public List<Likes> list() throws SQLException {
 		List<Likes> likes = new ArrayList<Likes>();
@@ -66,6 +79,12 @@ public class LikesDAO implements DatabaseAccessObject<Likes>{
 		return likes;
 	}
 
+	/**
+	 * gets specific like
+	 * 
+	 * @param data
+	 * @return Likes
+	 */
 	@Override
 	public Likes get(Likes data) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(READ_LIKES_FOR_USER_AND_PRODUCT_CMD);
@@ -86,6 +105,13 @@ public class LikesDAO implements DatabaseAccessObject<Likes>{
 		return l;
 	}
 	
+	/**
+	 * gets all likes for a specific user
+	 * 
+	 * @param userId
+	 * @return List<Likes>
+	 * @throws SQLException
+	 */
 	public List<Likes> getLikesForUser(Long userId) throws SQLException {
 		List<Likes> likes = new ArrayList<Likes>();
 		
@@ -105,6 +131,13 @@ public class LikesDAO implements DatabaseAccessObject<Likes>{
 		return likes;
 	}
 	
+	/**
+	 * gets all likes for a specific product
+	 * 
+	 * @param productId
+	 * @return List<Likes>
+	 * @throws SQLException
+	 */
 	public List<Likes> getLikesForProduct(Long productId) throws SQLException {
 		List<Likes> likes = new ArrayList<Likes>();
 		
@@ -124,6 +157,11 @@ public class LikesDAO implements DatabaseAccessObject<Likes>{
 		return likes;
 	}
 
+	/**
+	 * inserts new like
+	 * 
+	 * @param data
+	 */
 	@Override
 	public void insert(Likes data) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(INSERT_LIKES_CMD);
@@ -133,6 +171,11 @@ public class LikesDAO implements DatabaseAccessObject<Likes>{
 		stmt.close();
 	}
 
+	/**
+	 * deletes like
+	 * 
+	 * @param data
+	 */
 	@Override
 	public void delete(Likes data) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(DELETE_LIKES_CMD);
@@ -142,6 +185,12 @@ public class LikesDAO implements DatabaseAccessObject<Likes>{
 		stmt.close();
 	}
 
+	/**
+	 * updates existing likes data
+	 * 
+	 * @param oldData
+	 * @param newData
+	 */
 	@Override
 	public void update(Likes oldData, Likes newData) throws SQLException {
 		// TODO Auto-generated method stub
