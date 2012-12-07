@@ -36,7 +36,7 @@ import edu.sjsu.cmpe297.fb.OpenGraphUser;
 
 // POJO, no interface no extends
 
-// The class registers its methods for the HTTP GET request using the @GET annotation.
+// The class registers its methods for the HTTP GET request using the @GET annotation. 
 // Using the @Produces annotation, it defines that it can deliver several MIME types,
 // text, XML and HTML.
 
