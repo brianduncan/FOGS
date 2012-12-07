@@ -401,169 +401,12 @@ public class FogsCustomerService {
 		  
 		return retdata;
 	  }
-	  
-	  
-	  
-	  
-	  
-	  
-	  //This method will return the number of likes for a product by the user's friends
+	
+	 //This method will return the number of likes for a product by the user's friends
 	  @GET
 	  @Path("/friendsliked/{userid}/{facebookprodid}") 
 	  @Produces(MediaType.APPLICATION_JSON)
 	  public String getFriendsLikesProd(@PathParam("userid") String userid, @PathParam("facebookprodid") String facebookprodid) 
-	  {
-		  String retdata = "";
-		  JSONObject j = new JSONObject();
-		  
-		  //Validate that all the fields have been passed
-		  if(StringUtils.isEmpty(userid) || StringUtils.isEmpty(facebookprodid)) 
-		  {
-			  j.put("101", "REQUIRED PARAMETER FIELDS MISSING");
-			  retdata = j.toString();	    	
-		  }
-		  else 
-		  {
-			  try 
-			  {
-				  //Get list of user's facebook friends
-				  OpenGraphUser openGraphUser = new OpenGraphUser(userid);
-				  openGraphUser.setAccessToken(ACCESS_TOKEN);
-				  List<OpenGraphUser> friendsList = openGraphUser.getFriends();
-				  
-				  //If friends returned for the user
-				  if(friendsList.size() > 0)
-				  {
-					  JSONObject jusers = new JSONObject();
-
-					  //Get list of people who like the product
-					  LikesDAO likesDAO = LikesDAO.getInstance();
-					  List<Likes> productLikesList = likesDAO.getLikesForProduct(Long.parseLong(facebookprodid));
-					
-					  //Count for number of friends who like the product
-					  int count = 0;
-					  
-					  //Determine whether any of the user's friends like the product
-					  for(int i = 0; i < friendsList.size(); i++)
-					  {
-						  Likes friendLike = new Likes(Long.parseLong(friendsList.get(i).getId()), Long.parseLong(facebookprodid));
-						  
-						  if(productLikesList.contains(friendLike))
-						  {
-							  count++;
-							  jusers.put(count, friendsList.get(i).toJson());
-						  }
-					  }
-
-					  if(count > 0)
-					  {
-						  retdata = jusers.toString();
-					  }
-					  else
-					  {
-						  j.put("10", "NO FRIENDS FOUND");
-						  retdata = j.toString();
-					  }
-
-				  }
-				  else
-				  {
-					  j.put("10", "NO FRIENDS FOUND");
-					  retdata = j.toString();
-				  }
-			} 
-			catch (Exception e) 
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				j.put("100", "ERROR RETRIEVING DATA");
-				retdata = j.toString();
-			}
-	    }
-		  
-		return retdata;
-	  }
-	  
-	//This method will return the number of likes for a product by the user's friends
-	  @GET
-	  @Path("/friendsliked2/{userid}/{facebookprodid}") 
-	  @Produces(MediaType.APPLICATION_JSON)
-	  public String getFriendsLikesProd2(@PathParam("userid") String userid, @PathParam("facebookprodid") String facebookprodid) 
-	  {
-		  String retdata = "";
-		  JSONObject j = new JSONObject();
-		  
-		  //Validate that all the fields have been passed
-		  if(StringUtils.isEmpty(userid) || StringUtils.isEmpty(facebookprodid)) 
-		  {
-			  j.put("101", "REQUIRED PARAMETER FIELDS MISSING");
-			  retdata = j.toString();	    	
-		  }
-		  else 
-		  {
-			  try 
-			  {
-				  //Get string of user's facebook friends
-				  OpenGraphUser openGraphUser = new OpenGraphUser(userid);
-				  openGraphUser.setAccessToken(ACCESS_TOKEN);
-				  String friends = openGraphUser.getFriendsString();
-				  
-				  //If friends returned for the user
-				  if(friends.toCharArray().length != 0)
-				  {
-					  JSONObject jusers = new JSONObject();
-
-					  //Get list of people who like the product
-					  LikesDAO likesDAO = LikesDAO.getInstance();
-					  List<Likes> productLikesList = likesDAO.getLikesForProduct(Long.parseLong(facebookprodid));
-					
-					  //Count for number of friends who like the product
-					  int count = 0;
-					  
-					  //Determine whether any of the user's friends like the product
-					  for(int i = 0; i < productLikesList.size(); i++)
-					  {
-						  if(friends.contains(String.valueOf(productLikesList.get(i).getUserId())))
-						  {
-							  count++;
-							  OpenGraphUser ogu = new OpenGraphUser(String.valueOf(productLikesList.get(i).getUserId()));
-							  jusers.put(count, ogu.toJson());
-						  }
-					  }
-
-					  if(count > 0)
-					  {
-						  retdata = jusers.toString();
-					  }
-					  else
-					  {
-						  j.put("10", "NO FRIENDS FOUND");
-						  retdata = j.toString();
-					  }
-				  }
-				  else
-				  {
-					  j.put("10", "NO FRIENDS FOUND");
-					  retdata = j.toString();
-				  }
-			} 
-			catch (Exception e) 
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				j.put("100", "ERROR RETRIEVING DATA");
-				retdata = j.toString();
-			}
-	    }
-		  
-		return retdata;
-	  }
-	
-	 //This method will return the number of likes for a product by the user's friends
-	  @GET
-	  @Path("/friendsliked3/{userid}/{facebookprodid}") 
-	  @Produces(MediaType.APPLICATION_JSON)
-	  public String getFriendsLikesProd3(@PathParam("userid") String userid, @PathParam("facebookprodid") String facebookprodid) 
 	  {			
 		  String retdata = "";
 		  JSONObject j = new JSONObject();
@@ -613,6 +456,121 @@ public class FogsCustomerService {
 					  //Determine which registered friends like the product
 					  for(int i = 0; i < friendWhoIsUserList.size(); i++)
 				      {
+						  String likes = openGraphUser.getFriendLikes(friendWhoIsUserList.get(i));
+						  
+						  if(likes.contains(facebookprodid))
+						  {
+							  count++;
+							  OpenGraphUser ogu = new OpenGraphUser(friendWhoIsUserList.get(i));
+							  oguList.add(ogu);
+							  jusers.put(count, ogu.toJson());
+						  }
+					  }
+					  
+					  if(count > 0)
+					  {
+						  //Get list of existing views
+						  ViewsDAO viewsDAO = ViewsDAO.getInstance();
+						  List<Views> viewList = viewsDAO.list();
+						
+						  //Update or insert views as necessary
+						  for(int i = 0; i < oguList.size(); i++)
+						  {
+							  Views view = new Views(Long.valueOf(oguList.get(i).getId()), Long.valueOf(facebookprodid), 1L);
+							  
+							  if(viewList.contains(view))
+							  {
+								  viewList.get(viewList.indexOf(view)).incrementViewCount();
+								  viewsDAO.update(view, viewList.get(viewList.indexOf(view)));
+							  }
+							  else
+							  {
+								  viewsDAO.insert(view);
+							  }
+						  }
+
+						  retdata = jusers.toString();
+					  }
+					  else
+					  {
+						  j.put("10", "NO FRIENDS FOUND");
+						  retdata = j.toString();
+					  }
+				  }
+				  else
+				  {
+					  j.put("10", "NO FRIENDS FOUND");
+					  retdata = j.toString();
+				  }
+			} 
+			catch (Exception e) 
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				j.put("100", "ERROR RETRIEVING DATA");
+				retdata = j.toString();
+			}
+	    }
+		  
+		return retdata;
+	  }
+	  
+	 //This method will return the number of likes for a product by the user's friends not exceeding the specified return count
+	  @GET
+	  @Path("/friendsliked/{userid}/{facebookprodid}/{retcount}") 
+	  @Produces(MediaType.APPLICATION_JSON)
+	  public String getFriendsLikesProd(@PathParam("userid") String userid, @PathParam("facebookprodid") String facebookprodid, @PathParam("retcount") String retcount) 
+	  {			
+		  String retdata = "";
+		  JSONObject j = new JSONObject();
+		  
+		  //Validate that all the fields have been passed
+		  if(StringUtils.isEmpty(userid) || StringUtils.isEmpty(facebookprodid)) 
+		  {
+			  j.put("101", "REQUIRED PARAMETER FIELDS MISSING");
+			  retdata = j.toString();	    	
+		  }
+		  else 
+		  {
+			  try 
+			  {
+				  //Get string of user's facebook friends
+				  OpenGraphUser openGraphUser = new OpenGraphUser(userid);
+				  openGraphUser.setAccessToken(ACCESS_TOKEN);
+				  String friends = openGraphUser.getFriendsString();
+				  
+				  //Define list for friends who are registered users
+				  List<String> friendWhoIsUserList = new ArrayList<String>();
+				  
+				  //Define list for open graph users who like the product
+				  List<OpenGraphUser> oguList = new ArrayList<OpenGraphUser>();
+				  
+				  //If friends returned for the user
+				  if(friends.toCharArray().length != 0)
+				  {
+					  JSONObject jusers = new JSONObject();
+
+					  //Get list of existing users
+					  UsersDAO usersDAO = UsersDAO.getInstance();
+				      List<Users> userList = usersDAO.list();
+				      
+				      //Determine which friends are registered users
+				      for(int i = 0; i < userList.size(); i++)
+					  {
+				    	  if(!userid.contains(String.valueOf(userList.get(i).getFacebookId())) && friends.contains(String.valueOf(userList.get(i).getFacebookId())))
+						  {
+							  friendWhoIsUserList.add(String.valueOf(userList.get(i).getFacebookId()));
+						  }
+					  }
+					
+					  //Count for number of friends who like the product
+					  int count = 0;
+					  
+					  //Determine which registered friends like the product
+					  for(int i = 0; i < friendWhoIsUserList.size(); i++)
+				      {
+						  if(count >= Integer.valueOf(retcount)) break;
+						  
 						  String likes = openGraphUser.getFriendLikes(friendWhoIsUserList.get(i));
 						  
 						  if(likes.contains(facebookprodid))
