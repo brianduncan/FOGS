@@ -44,20 +44,19 @@ import edu.sjsu.cmpe297.fb.OpenGraphUser;
 public class FogsCustomerService {
 	
 	private String ACCESS_TOKEN = "AAAAAAITEghMBADsLi3nNZCvOpjEo8p1pZCo1JwxGoCsswh2PRQ6rZA2uARUiI4BH1G9xJGxYK4MdZC2xbPuMkmcMAyZCPPQjcHK46uk00xgZDZD";
-	private String RAHUL_ACCESS_TOKEN = "AAAAAAITEghMBAIgrFUf9ZCkfoiZCzOv5OSKGvPhPrsKpwZCsxjRWDhcTcU0lEc2kbaIsg4UT7PLeJcdZAONmtgt3YW1GLpGtayeoZButZBvG5eqiDOAjZCs";
 	  
 	  
 		//This method will return the number of likes for a product by the user's friends
 	  @GET
-	  @Path("/friendsviewretall/{userid}/{facebookprodid}") 
+	  @Path("/friendsviewretall/{userid}/{facebookprodid}/{token}") 
 	  @Produces(MediaType.APPLICATION_JSON)
-	  public String getFriendsVisitedProd2(@PathParam("userid") String userid, @PathParam("facebookprodid") String facebookprodid) 
+	  public String getFriendsVisitedProd2(@PathParam("userid") String userid, @PathParam("facebookprodid") String facebookprodid, @PathParam("token") String token) 
 	  {
 		  String retdata = "";
 		  JSONObject j = new JSONObject();
 		  
 		  //Validate that all the fields have been passed
-		  if(StringUtils.isEmpty(userid) || StringUtils.isEmpty(facebookprodid)) 
+		  if(StringUtils.isEmpty(userid) || StringUtils.isEmpty(facebookprodid) || StringUtils.isEmpty(token)) 
 		  {
 			  j.put("101", "REQUIRED PARAMETER FIELDS MISSING");
 			  retdata = j.toString();	    	
@@ -68,7 +67,7 @@ public class FogsCustomerService {
 			  {
 				  //Get string of user's facebook friends
 				  OpenGraphUser openGraphUser = new OpenGraphUser(userid);
-				  openGraphUser.setAccessToken(RAHUL_ACCESS_TOKEN);
+				  openGraphUser.setAccessToken(token);
 				  String friends = openGraphUser.getFriendsString();
 				  
 				  //If friends returned for the user
@@ -141,15 +140,15 @@ public class FogsCustomerService {
 	  
 	//This method will return the number of likes for a product by the user's friends
 	  @GET
-	  @Path("/friendsviewretlimited/{userid}/{facebookprodid}/{retcount}") 
+	  @Path("/friendsviewretlimited/{userid}/{facebookprodid}/{retcount}/{token}") 
 	  @Produces(MediaType.APPLICATION_JSON)
-	  public String getFriendsVisitedProd3(@PathParam("userid") String userid, @PathParam("facebookprodid") String facebookprodid, @PathParam("retcount") String retcount) 
+	  public String getFriendsVisitedProd3(@PathParam("userid") String userid, @PathParam("facebookprodid") String facebookprodid, @PathParam("retcount") String retcount, @PathParam("token") String token) 
 	  {
 		  String retdata = "";
 		  JSONObject j = new JSONObject();
 		  
 		  //Validate that all the fields have been passed
-		  if(StringUtils.isEmpty(userid) || StringUtils.isEmpty(facebookprodid)) 
+		  if(StringUtils.isEmpty(userid) || StringUtils.isEmpty(facebookprodid) || (StringUtils.isEmpty(retcount)) || StringUtils.isEmpty(token)) 
 		  {
 			  j.put("101", "REQUIRED PARAMETER FIELDS MISSING");
 			  retdata = j.toString();	    	
@@ -160,7 +159,7 @@ public class FogsCustomerService {
 			  {
 				  //Get string of user's facebook friends
 				  OpenGraphUser openGraphUser = new OpenGraphUser(userid);
-				  openGraphUser.setAccessToken(RAHUL_ACCESS_TOKEN);
+				  openGraphUser.setAccessToken(token);
 				  String friends = openGraphUser.getFriendsString();
 				  
 				  //If friends returned for the user
