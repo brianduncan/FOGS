@@ -46,7 +46,7 @@ import edu.sjsu.cmpe297.fb.OpenGraphUser;
 @Path("/fogs")
 public class FogsCustomerService {
 	
-	private String ACCESS_TOKEN = "AAAAAAITEghMBADXNhniwNFCMwOZCyngYoBp51ZBp6jl6Yz62hvWFj4LFPyG94sDAvFGXOFHu3zXOyQhuZBZCGNZBACZC9EkPLSkeQBaxNFuwZDZD";
+	private String ACCESS_TOKEN = "AAAAAAITEghMBAHz5snoCOzZCErLDqA1efOmbgb02sJM3CorwrOJXKbZA7JPz63hzzYuCQtlmPwN4xuFdSbjXAs3ZAKkIL6jWf3EOrF0YwdjULPFgZB51";
 	
 	//This method will be used to get the friends that navigated the
 	//same product. It will pass back the configurable number of friends.
@@ -173,7 +173,7 @@ public class FogsCustomerService {
 			  {
 				  //Get string of user's facebook friends
 				  OpenGraphUser openGraphUser = new OpenGraphUser(userid);
-				  openGraphUser.setAccessToken("AAAAAAITEghMBAHCl2sjpZBA1IYnEPmAukFprwaEuA5XhRlnZA21JHzoHgZBZAErq8ahV1g9sda9KSccfrUfKEu6r4wgJ9LlDt0BkWDSzwySoJb9R5hjH");
+				  openGraphUser.setAccessToken("AAAAAAITEghMBAHz5snoCOzZCErLDqA1efOmbgb02sJM3CorwrOJXKbZA7JPz63hzzYuCQtlmPwN4xuFdSbjXAs3ZAKkIL6jWf3EOrF0YwdjULPFgZB51");
 				  String friends = openGraphUser.getFriendsString();
 				  
 				  //If friends returned for the user
@@ -185,12 +185,13 @@ public class FogsCustomerService {
 					  ViewsDAO viewsDAO = ViewsDAO.getInstance();
 					  List<Views> productViewList = viewsDAO.getViewsForProduct(Long.parseLong(facebookprodid));
 					  
-					//Create a hasmap of the view that is returned
+					/*//Create a hasmap of the view that is returned
 					  HashMap<Long, Long> upmap = new HashMap<Long, Long>();
 					  for(int i=0; i<productViewList.size(); i++){
 						  Views v = productViewList.get(i);
-						  upmap.put(v.getUserId(), v.getViewCount());						  
-					  }
+						  upmap.put(v.getUserId(), v.getViewCount());		
+						  System.out.println("Views from table user=" + v.getUserId() + " viewcount=" + v.getViewCount());
+					  }*/
 					
 					  //Count for number of friends who viewed the product
 					  int count = 0;
@@ -217,7 +218,24 @@ public class FogsCustomerService {
 					  }
 					  
 					  
-					  //Insert/Update the views record for the user for this product if user already does not exist in the db
+					  
+					  Views view = new Views(Long.valueOf(userid), Long.valueOf(facebookprodid), 1L);
+					  
+					  if(productViewList.contains(view))
+					  {
+						  view.incrementViewCount();
+						  viewsDAO.update(productViewList.get(productViewList.indexOf(view)), view);
+					  }
+					  else
+					  {
+						  viewsDAO.insert(view);
+					  }
+					  
+					  
+					  
+					  
+					  
+					  /*//Insert/Update the views record for the user for this product if user already does not exist in the db
 					  if(upmap.containsKey(userid)){
 						  //User exist in the db for viewing the product
 						  Views v = new Views(Long.parseLong(userid), Long.parseLong(facebookprodid), null);
@@ -235,7 +253,7 @@ public class FogsCustomerService {
 						  //Check and add product if not existing in db
 						  Views v = new Views(Long.parseLong(userid), Long.parseLong(facebookprodid), new Long(1));
 						  viewsDAO.insert(v);
-					  }
+					  }*/
 					  
 				  }
 				  else
