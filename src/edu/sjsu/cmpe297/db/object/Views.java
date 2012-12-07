@@ -42,4 +42,16 @@ public class Views implements DatabaseObject {
 		viewCount++;
 	}
 	
+	@Override
+	public boolean equals(Object obj)
+	{
+		Views view = (Views)obj;
+
+		if(view.getUserId().equals(userId) && view.getProductId().equals(productId))
+		{
+			return true;
+		}
+
+		return false;
+	}
 }
