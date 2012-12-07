@@ -20,11 +20,9 @@ import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 
 import edu.sjsu.cmpe297.db.dao.CompanyDAO;
-import edu.sjsu.cmpe297.db.dao.LikesDAO;
 import edu.sjsu.cmpe297.db.dao.UsersDAO;
 import edu.sjsu.cmpe297.db.dao.ViewsDAO;
 import edu.sjsu.cmpe297.db.object.Company;
-import edu.sjsu.cmpe297.db.object.Likes;
 import edu.sjsu.cmpe297.db.object.Users;
 import edu.sjsu.cmpe297.db.object.Views;
 import edu.sjsu.cmpe297.fb.OpenGraphUser;
