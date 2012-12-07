@@ -48,7 +48,7 @@ import edu.sjsu.cmpe297.fb.OpenGraphUser;
 public class FogsCustomerService {
 	
 	private String ACCESS_TOKEN = "AAAAAAITEghMBADsLi3nNZCvOpjEo8p1pZCo1JwxGoCsswh2PRQ6rZA2uARUiI4BH1G9xJGxYK4MdZC2xbPuMkmcMAyZCPPQjcHK46uk00xgZDZD";
-	private String RAHUL_ACCESS_TOKEN = "AAAAAAITEghMBAM9AJWZAYlSQO2ZBxZAmUcIo2UXip6POJaex1ZA7SRMHOzxRCOIxR5kmNxxDYZCEiZB7mGkkvKyfc5CGZBCP50ext9F2d0e5meIO94loNbs";
+	private String RAHUL_ACCESS_TOKEN = "AAAAAAITEghMBAIgrFUf9ZCkfoiZCzOv5OSKGvPhPrsKpwZCsxjRWDhcTcU0lEc2kbaIsg4UT7PLeJcdZAONmtgt3YW1GLpGtayeoZButZBvG5eqiDOAjZCs";
 	
 	//This method will be used to get the friends that navigated the
 	//same product. It will pass back the configurable number of friends.
@@ -225,8 +225,10 @@ public class FogsCustomerService {
 					  
 					  if(productViewList.contains(view))
 					  {
-						  view.incrementViewCount();
-						  viewsDAO.update(productViewList.get(productViewList.indexOf(view)), view);
+						  //view.incrementViewCount();
+						  //viewsDAO.update(productViewList.get(productViewList.indexOf(view)), view);
+						  productViewList.get(productViewList.indexOf(view)).incrementViewCount();
+						  viewsDAO.update(view, productViewList.get(productViewList.indexOf(view)));
 					  }
 					  else
 					  {
@@ -371,8 +373,10 @@ public class FogsCustomerService {
 					  
 					  if(productViewList.contains(view))
 					  {
-						  view.incrementViewCount();
-						  viewsDAO.update(productViewList.get(productViewList.indexOf(view)), view);
+						  //view.incrementViewCount();
+						  //viewsDAO.update(productViewList.get(productViewList.indexOf(view)), view);
+						  productViewList.get(productViewList.indexOf(view)).incrementViewCount();
+						  viewsDAO.update(view, productViewList.get(productViewList.indexOf(view)));
 					  }
 					  else
 					  {
