@@ -46,7 +46,7 @@ import edu.sjsu.cmpe297.fb.OpenGraphUser;
 @Path("/fogs")
 public class FogsCustomerService {
 	
-	private String ACCESS_TOKEN = "AAAAAAITEghMBAFo6p9GsqKWSci0i4Y5YAX4V9bqEDQX6Ng0lkaW4R9WQm5BlDko7IPuwMe7K6GtNuGFCZCYB7UHZCVd1OP4PWiHTwKUwZDZD";
+	private String ACCESS_TOKEN = "AAAAAAITEghMBADXNhniwNFCMwOZCyngYoBp51ZBp6jl6Yz62hvWFj4LFPyG94sDAvFGXOFHu3zXOyQhuZBZCGNZBACZC9EkPLSkeQBaxNFuwZDZD";
 	
 	//This method will be used to get the friends that navigated the
 	//same product. It will pass back the configurable number of friends.
@@ -438,7 +438,7 @@ public class FogsCustomerService {
 				  List<String> friendWhoIsUserList = new ArrayList<String>();
 				  
 				  //Define list for open graph users who like the product
-				  List<OpenGraphUser> oguList = new ArrayList<OpenGraphUser>(); //<----Mike, this is the list of open graph users for the views code
+				  List<OpenGraphUser> oguList = new ArrayList<OpenGraphUser>();
 				  
 				  //If friends returned for the user
 				  if(friends.toCharArray().length != 0)
@@ -466,12 +466,32 @@ public class FogsCustomerService {
 				      {
 						  String likes = openGraphUser.getFriendLikes(friendWhoIsUserList.get(i));
 						  
-						  if(likes.contains(String.valueOf(facebookprodid)))
+						  if(likes.contains(facebookprodid))
 						  {
 							  count++;
 							  OpenGraphUser ogu = new OpenGraphUser(friendWhoIsUserList.get(i));
 							  oguList.add(ogu);
 							  jusers.put(count, ogu.toJson());
+						  }
+					  }
+					  
+					  //Get list of existing views
+					  ViewsDAO viewsDAO = ViewsDAO.getInstance();
+					  List<Views> viewList = viewsDAO.list();
+					
+					  //Update or insert views as necessary
+					  for(int i = 0; i < oguList.size(); i++)
+					  {
+						  Views view = new Views(Long.valueOf(oguList.get(i).getId()), Long.valueOf(facebookprodid), 1L);
+						  
+						  if(viewList.contains(view))
+						  {
+							  view.incrementViewCount();
+							  viewsDAO.update(viewList.get(viewList.indexOf(view)), view);
+						  }
+						  else
+						  {
+							  viewsDAO.insert(view);
 						  }
 					  }
 					  
