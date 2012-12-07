@@ -5,8 +5,6 @@ package edu.sjsu.cmpe297;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.ws.rs.GET;
@@ -47,109 +45,6 @@ public class FogsCustomerService {
 	
 	private String ACCESS_TOKEN = "AAAAAAITEghMBADsLi3nNZCvOpjEo8p1pZCo1JwxGoCsswh2PRQ6rZA2uARUiI4BH1G9xJGxYK4MdZC2xbPuMkmcMAyZCPPQjcHK46uk00xgZDZD";
 	private String RAHUL_ACCESS_TOKEN = "AAAAAAITEghMBAIgrFUf9ZCkfoiZCzOv5OSKGvPhPrsKpwZCsxjRWDhcTcU0lEc2kbaIsg4UT7PLeJcdZAONmtgt3YW1GLpGtayeoZButZBvG5eqiDOAjZCs";
-	
-	//This method will be used to get the friends that navigated the
-	//same product. It will pass back the configurable number of friends.
-	  @GET
-	  @Path("/friendsvisited/{userid}/{compid}/{facebookprodid}/{listsize}/{uname}/{prodname}") 
-	  @Produces(MediaType.APPLICATION_JSON)
-	  public String getFriendsVisitedProd(@PathParam("userid") String userid, @PathParam("compid") String compid, 
-			  							  @PathParam("facebookprodid") String facebookprodid, @PathParam("listsize") String listsize, 
-			  							  @PathParam("uname") String uname, @PathParam("prodname") String prodname){
-		  
-	   
-	    String retdata = "";
-	    JSONObject j = new JSONObject();
-	    //Validate that all the fields have been passed
-	    if(StringUtils.isEmpty(userid) || StringUtils.isEmpty(compid)
-	    		|| StringUtils.isEmpty(facebookprodid) || StringUtils.isEmpty(listsize)){
-	    		    	  
-			  j.put("101", "REQUIRED PARAMETER FIELDS MISSING");
-			  retdata = j.toString();	    	
-	    }else{
-		  
-			  try {
-				  //Get facebook freinds for the user
-				  OpenGraphUser ogu = new OpenGraphUser(userid);
-				  ogu.setAccessToken(RAHUL_ACCESS_TOKEN);
-				  List<OpenGraphUser> friends = ogu.getFriends();
-				  int flsize = 0;
-				  //If friends returned for the user
-				  if(friends.size()>0){
-					  //Evaluate the size of the list to be returned
-					  if(StringUtils.isNotEmpty(listsize) 
-							  && FogsCSHelper.isNumeric(listsize)){
-						  flsize = Integer.parseInt(listsize);
-					  }else{
-						  flsize = friends.size();
-					  }
-					  
-					  //Get all the users who viewed the product
-					  ViewsDAO vd = ViewsDAO.getInstance();
-					  List<Views> prodview = vd.getViewsForProduct(Long.parseLong(facebookprodid));
-					  
-					  //Create a hasmap of the view that is returned
-					  HashMap<Long, Long> upmap = new HashMap<Long, Long>();
-					  for(int i=0; i<prodview.size(); i++){
-						  Views v = prodview.get(i);
-						  upmap.put(v.getUserId(), v.getViewCount());						  
-					  }
-					  
-					  //Check if the friend of users viewed the products
-					  JSONObject jusers = new JSONObject();
-					  int x = 0;
-					  for(int i=0; i<flsize; i++){
-						  //Check if friend's id exists in the list, then add it to the list to be returned
-						  if(upmap.containsKey(friends.get(i).getId())){
-							  x = x + 1;
-							  jusers.put(x, friends.get(i).getId());							  
-						  }						  
-					  }
-					  
-					  //If list of friends was found
-					  if(x>0){
-						  retdata = jusers.toString();
-					  }else{
-						  j.put("10", "NO FRIENDS FOUND");
-						  retdata = j.toString();
-					  }
-					  
-					  //Insert/Update the views record for the user for this product if user already does not exist in the db
-					  if(upmap.containsKey(userid)){
-						  //User exist in the db for viewing the product
-						  Views v = new Views(Long.parseLong(userid), Long.parseLong(facebookprodid), null);
-						  v = vd.get(v);
-						  Views vnew = new Views(v.getUserId(), v.getProductId(), new Long(v.getViewCount().intValue() + 1));						 
-						  vd.update(v, vnew);
-					  }else{
-						  
-						  //Check and add user if not present in users table
-						  FogsCSHelper.checkAndAddUser(Long.parseLong(userid), uname);
-						  
-						  //Check and add product if not present
-						  FogsCSHelper.checkAndAddProduct(Long.parseLong(facebookprodid), prodname, Long.parseLong(compid));
-						  
-						  //Check and add product if not existing in db
-						  Views v = new Views(Long.parseLong(userid), Long.parseLong(facebookprodid), new Long(1));
-						  vd.insert(v);
-					  }
-					  
-				  }else{
-					  j.put("10", "NO FRIENDS FOUND");
-					  retdata = j.toString();
-				  }
-				  
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				j.put("100", "ERROR RETRIEVING DATA");
-				retdata = j.toString();
-			}
-	    }
-		  
-		  return retdata;
-	  }
-	  
 	  
 	  
 		//This method will return the number of likes for a product by the user's friends
@@ -184,15 +79,6 @@ public class FogsCustomerService {
 					  //Get list of people who viewed the product
 					  ViewsDAO viewsDAO = ViewsDAO.getInstance();
 					  List<Views> productViewList = viewsDAO.getViewsForProduct(Long.parseLong(facebookprodid));
-					  
-					/*//Create a hasmap of the view that is returned
-					  HashMap<Long, Long> upmap = new HashMap<Long, Long>();
-					  for(int i=0; i<productViewList.size(); i++){
-						  Views v = productViewList.get(i);
-						  upmap.put(v.getUserId(), v.getViewCount());		
-						  System.out.println("Views from table user=" + v.getUserId() + " viewcount=" + v.getViewCount());
-					  }*/
-					
 					  //Count for number of friends who viewed the product
 					  int count = 0;
 					  
@@ -223,8 +109,6 @@ public class FogsCustomerService {
 					  
 					  if(productViewList.contains(view))
 					  {
-						  //view.incrementViewCount();
-						  //viewsDAO.update(productViewList.get(productViewList.indexOf(view)), view);
 						  productViewList.get(productViewList.indexOf(view)).incrementViewCount();
 						  viewsDAO.update(view, productViewList.get(productViewList.indexOf(view)));
 					  }
@@ -233,29 +117,6 @@ public class FogsCustomerService {
 						  viewsDAO.insert(view);
 					  }
 					  
-					  
-					  
-					  
-					  
-					  /*//Insert/Update the views record for the user for this product if user already does not exist in the db
-					  if(upmap.containsKey(userid)){
-						  //User exist in the db for viewing the product
-						  Views v = new Views(Long.parseLong(userid), Long.parseLong(facebookprodid), null);
-						  v = viewsDAO.get(v);
-						  Views vnew = new Views(v.getUserId(), v.getProductId(), new Long(v.getViewCount().intValue() + 1));						 
-						  viewsDAO.update(v, vnew);
-					  }else{
-						  
-						  //Check and add user if not present in users table
-						  //FogsCSHelper.checkAndAddUser(Long.parseLong(userid), userid);
-						  
-						  //Check and add product if not present
-						  //FogsCSHelper.checkAndAddProduct(Long.parseLong(facebookprodid), facebookprodid, Long.parseLong(compid));
-						  
-						  //Check and add product if not existing in db
-						  Views v = new Views(Long.parseLong(userid), Long.parseLong(facebookprodid), new Long(1));
-						  viewsDAO.insert(v);
-					  }*/
 					  
 				  }
 				  else
@@ -312,52 +173,27 @@ public class FogsCustomerService {
 					  List<Views> productViewList = viewsDAO.getViewsForProduct(Long.parseLong(facebookprodid));
 					
 					  //Count for number of friends who viewed the product
-					  int count = 0;
+					  int count = 0;					  
 					  
 					  //Determine whether any of the user's friends viewed the product
 					  for(int i = 0; i < productViewList.size(); i++)
 					  {
+						  
+						  if(count >= Integer.valueOf(retcount)) break;
+						  
 						  if(friends.contains(String.valueOf(productViewList.get(i).getUserId())))
 						  {
-							  count++;
+							  count++;							  
 							  OpenGraphUser ogu = new OpenGraphUser(String.valueOf(productViewList.get(i).getUserId()));
 							  jusers.put(count, ogu.toJson());
-						  }
+						  }	  
 					  }
 					  
 					  
-
+					  
 					  if(count > 0)
 					  {
-						  
-						  //If return count is specified then check the value to be returned
-						  if((StringUtils.isNotEmpty(retcount)) && (count > Integer.valueOf(retcount))){
-							  
-							  JSONObject limitedjusers = new JSONObject();
-							  
-							  @SuppressWarnings("rawtypes")
-							  Iterator iter = jusers.keys();
-							  int jusercount = 0;
-							  while(iter.hasNext()){
-								  
-								   if(jusercount == Integer.valueOf(retcount)){
-									   break;
-								   }
-								  
-							        String key = (String)iter.next();
-							        String value = jusers.getString(key);
-							        limitedjusers.put(key,value);
-							        jusercount++;						        
-							    }
-							  
-							  retdata = limitedjusers.toString();
-							  
-						  }else{
-						  
-							  retdata = jusers.toString();
-						  }
-					  
-					  
+						  retdata = jusers.toString();
 					  }
 					  else
 					  {
@@ -366,13 +202,10 @@ public class FogsCustomerService {
 					  }
 					  
 					  
-					  
 					  Views view = new Views(Long.valueOf(userid), Long.valueOf(facebookprodid), 1L);
 					  
 					  if(productViewList.contains(view))
 					  {
-						  //view.incrementViewCount();
-						  //viewsDAO.update(productViewList.get(productViewList.indexOf(view)), view);
 						  productViewList.get(productViewList.indexOf(view)).incrementViewCount();
 						  viewsDAO.update(view, productViewList.get(productViewList.indexOf(view)));
 					  }
