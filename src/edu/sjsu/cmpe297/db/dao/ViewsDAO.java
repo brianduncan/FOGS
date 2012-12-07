@@ -23,7 +23,6 @@ public class ViewsDAO extends FogsDatabase implements DatabaseAccessObject<Views
 	private static final String INSERT_VIEWS_CMD = "insert into views (user_id, product_id, view_count) values (?, ?, ?)";
 	private static final String UPDATE_VIEWCOUNT_CMD = "update views set view_count=? where user_id=? and product_id=?";
 	private static final String DELETE_VIEWS_CMD = "delete from views where user_id=? and product_id=?";
-	private static final String DELETE_VIEWS_ALL_CMD = "delete from views";
 
 	private ViewsDAO() {
 		super();
@@ -63,14 +62,12 @@ public class ViewsDAO extends FogsDatabase implements DatabaseAccessObject<Views
 		stmt.setLong(2, data.getProductId());
 		ResultSet rs = stmt.executeQuery();
 		
-		Views v = null;
+		rs.next();
 		
-		if (rs.next()) {
-			Long userId = rs.getLong(1);
-			Long productId = rs.getLong(2);
-			Long viewCount = rs.getLong(3);
-			v = new Views(userId, productId, viewCount);
-		}
+		Long userId = rs.getLong(1);
+		Long productId = rs.getLong(2);
+		Long viewCount = rs.getLong(3);
+		Views v = new Views(userId, productId, viewCount);
 		
 		rs.close();
 		stmt.close();
@@ -143,12 +140,6 @@ public class ViewsDAO extends FogsDatabase implements DatabaseAccessObject<Views
 		PreparedStatement stmt = con.prepareStatement(DELETE_VIEWS_CMD);
 		stmt.setLong(1, data.getUserId());
 		stmt.setLong(2, data.getProductId());
-		stmt.executeUpdate();
-		stmt.close();
-	}
-	
-	public void deleteAllViews() throws SQLException {
-		PreparedStatement stmt = con.prepareStatement(DELETE_VIEWS_ALL_CMD);
 		stmt.executeUpdate();
 		stmt.close();
 	}

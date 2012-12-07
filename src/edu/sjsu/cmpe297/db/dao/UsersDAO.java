@@ -58,13 +58,11 @@ public class UsersDAO extends FogsDatabase implements DatabaseAccessObject<Users
 		stmt.setLong(1, data.getFacebookId());
 		ResultSet rs = stmt.executeQuery();
 		
-		Users u = null;
+		rs.next();
 		
-		if (rs.next()) {		
-			Long facebookId = rs.getLong(1);
-			String name = rs.getString(2);
-			u = new Users(facebookId, name);
-		}
+		Long facebookId = rs.getLong(1);
+		String name = rs.getString(2);
+		Users u = new Users(facebookId, name);
 		
 		rs.close();
 		stmt.close();

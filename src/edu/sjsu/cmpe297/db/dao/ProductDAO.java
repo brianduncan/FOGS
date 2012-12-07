@@ -60,14 +60,12 @@ public class ProductDAO extends FogsDatabase implements DatabaseAccessObject<Pro
 		stmt.setLong(1, data.getFacebookId());
 		ResultSet rs = stmt.executeQuery();
 		
-		Product p = null;
+		rs.next();
 		
-		if (rs.next()) {
-			Long facebookId = rs.getLong(1);
-			String name = rs.getString(2);
-			Long companyId = rs.getLong(3);
-			p = new Product(facebookId, name, companyId);
-		}
+		Long facebookId = rs.getLong(1);
+		String name = rs.getString(2);
+		Long companyId = rs.getLong(3);
+		Product p = new Product(facebookId, name, companyId);
 		
 		rs.close();
 		stmt.close();

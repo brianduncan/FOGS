@@ -58,12 +58,11 @@ public class CompanyDAO extends FogsDatabase implements DatabaseAccessObject<Com
 		stmt.setLong(1, data.getFacebookId());
 		ResultSet rs = stmt.executeQuery();
 		
-		Company c = null;
-		if (rs.next()) {
-			Long facebookId = rs.getLong(1);
-			String name = rs.getString(2);
-			c = new Company(facebookId, name);
-		}
+		rs.next();
+		
+		Long facebookId = rs.getLong(1);
+		String name = rs.getString(2);
+		Company c = new Company(facebookId, name);
 		
 		rs.close();
 		stmt.close();
