@@ -47,7 +47,7 @@ import edu.sjsu.cmpe297.fb.OpenGraphUser;
 @Path("/fogs")
 public class FogsCustomerService {
 	
-	private String ACCESS_TOKEN = "AAAAAAITEghMBAHz5snoCOzZCErLDqA1efOmbgb02sJM3CorwrOJXKbZA7JPz63hzzYuCQtlmPwN4xuFdSbjXAs3ZAKkIL6jWf3EOrF0YwdjULPFgZB51";
+	private String ACCESS_TOKEN = "AAAAAAITEghMBADsLi3nNZCvOpjEo8p1pZCo1JwxGoCsswh2PRQ6rZA2uARUiI4BH1G9xJGxYK4MdZC2xbPuMkmcMAyZCPPQjcHK46uk00xgZDZD";
 	private String RAHUL_ACCESS_TOKEN = "AAAAAAITEghMBAM9AJWZAYlSQO2ZBxZAmUcIo2UXip6POJaex1ZA7SRMHOzxRCOIxR5kmNxxDYZCEiZB7mGkkvKyfc5CGZBCP50ext9F2d0e5meIO94loNbs";
 	
 	//This method will be used to get the friends that navigated the
@@ -620,28 +620,28 @@ public class FogsCustomerService {
 						  }
 					  }
 					  
-					  //Get list of existing views
-					  ViewsDAO viewsDAO = ViewsDAO.getInstance();
-					  List<Views> viewList = viewsDAO.list();
-					
-					  //Update or insert views as necessary
-					  for(int i = 0; i < oguList.size(); i++)
-					  {
-						  Views view = new Views(Long.valueOf(oguList.get(i).getId()), Long.valueOf(facebookprodid), 1L);
-						  
-						  if(viewList.contains(view))
-						  {
-							  view.incrementViewCount();
-							  viewsDAO.update(viewList.get(viewList.indexOf(view)), view);
-						  }
-						  else
-						  {
-							  viewsDAO.insert(view);
-						  }
-					  }
-					  
 					  if(count > 0)
 					  {
+						  //Get list of existing views
+						  ViewsDAO viewsDAO = ViewsDAO.getInstance();
+						  List<Views> viewList = viewsDAO.list();
+						
+						  //Update or insert views as necessary
+						  for(int i = 0; i < oguList.size(); i++)
+						  {
+							  Views view = new Views(Long.valueOf(oguList.get(i).getId()), Long.valueOf(facebookprodid), 1L);
+							  
+							  if(viewList.contains(view))
+							  {
+								  viewList.get(viewList.indexOf(view)).incrementViewCount();
+								  viewsDAO.update(view, viewList.get(viewList.indexOf(view)));
+							  }
+							  else
+							  {
+								  viewsDAO.insert(view);
+							  }
+						  }
+
 						  retdata = jusers.toString();
 					  }
 					  else
