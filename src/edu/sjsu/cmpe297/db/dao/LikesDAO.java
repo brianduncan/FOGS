@@ -9,6 +9,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.sjsu.cmpe297.db.object.Company;
 import edu.sjsu.cmpe297.db.object.Likes;
 
 public class LikesDAO implements DatabaseAccessObject<Likes>{
@@ -72,11 +73,12 @@ public class LikesDAO implements DatabaseAccessObject<Likes>{
 		stmt.setLong(2, data.getProductId());
 		ResultSet rs = stmt.executeQuery();
 		
-		rs.next();
-		
-		Long userId = rs.getLong(1);
-		Long productId = rs.getLong(2);
-		Likes l = new Likes(userId, productId);
+		Likes l = null;
+		if (rs.next()) {
+			Long userId = rs.getLong(1);
+			Long productId = rs.getLong(2);
+			l = new Likes(userId, productId);
+		}
 		
 		rs.close();
 		stmt.close();
