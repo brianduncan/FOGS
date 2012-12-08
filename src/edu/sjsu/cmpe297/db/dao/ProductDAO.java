@@ -23,16 +23,29 @@ public class ProductDAO extends FogsDatabase implements DatabaseAccessObject<Pro
 	private static final String UPDATE_PRODUCT_CMD = "update product set facebook_id=?, name=?, company_id=? where facebook_id=?";
 	private static final String DELETE_PRODUCT_CMD = "delete from product where facebook_id=?";
 
+	/**
+	 * constructor
+	 */
 	private ProductDAO() {
 		super();
 		
         con = getDatabaseConnection();
 	}
 	
+	/**
+	 * get singleton instance of ProductDAO
+	 * 
+	 * @return ProductDAO
+	 */
 	public static synchronized ProductDAO getInstance() {
 		return INSTANCE;
 	}
 	
+	/**
+	 * lists all products
+	 * 
+	 * @return List<Product>
+	 */
 	@Override
 	public List<Product> list() throws SQLException {
 		List<Product> products = new ArrayList<Product>();
@@ -54,6 +67,12 @@ public class ProductDAO extends FogsDatabase implements DatabaseAccessObject<Pro
 		return products;
 	}
 
+	/**
+	 * gets specific product
+	 * 
+	 * @param data
+	 * @return Product
+	 */
 	@Override
 	public Product get(Product data) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(READ_PRODUCT_FOR_ID_CMD);
@@ -75,6 +94,13 @@ public class ProductDAO extends FogsDatabase implements DatabaseAccessObject<Pro
 		return p;
 	}
 	
+	/**
+	 * gets all products for a specific company
+	 * 
+	 * @param companyId
+	 * @return List<Product>
+	 * @throws SQLException
+	 */
 	public List<Product> getProductsForCompany(Long companyId) throws SQLException {
 		List<Product> products = new ArrayList<Product>();
 		
@@ -95,6 +121,11 @@ public class ProductDAO extends FogsDatabase implements DatabaseAccessObject<Pro
 		return products;
 	}
 
+	/**
+	 * inserts new product
+	 * 
+	 * @param data
+	 */
 	@Override
 	public void insert(Product data) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(INSERT_PRODUCT_CMD);
@@ -105,6 +136,12 @@ public class ProductDAO extends FogsDatabase implements DatabaseAccessObject<Pro
 		stmt.close();
 	}
 
+	/**
+	 * updates existing product data
+	 * 
+	 * @param oldData
+	 * @param newData
+	 */
 	@Override
 	public void update(Product oldData, Product newData) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(UPDATE_PRODUCT_CMD);
@@ -116,6 +153,11 @@ public class ProductDAO extends FogsDatabase implements DatabaseAccessObject<Pro
 		stmt.close();
 	}
 
+	/**
+	 * deletes product
+	 * 
+	 * @param data
+	 */
 	@Override
 	public void delete(Product data) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(DELETE_PRODUCT_CMD);

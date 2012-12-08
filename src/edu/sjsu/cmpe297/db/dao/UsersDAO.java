@@ -22,16 +22,29 @@ public class UsersDAO extends FogsDatabase implements DatabaseAccessObject<Users
 	private static final String UPDATE_USERS_CMD = "update users set facebook_id=?, name=? where facebook_id=?";
 	private static final String DELETE_USERS_CMD = "delete from users where facebook_id=?";
 
+	/**
+	 * constructor
+	 */
 	private UsersDAO() {
 		super();
 		
 		con = getDatabaseConnection();
 	}
 	
+	/**
+	 * get singleton instance of UsersDAO
+	 * 
+	 * @return UsersDAO
+	 */
 	public static synchronized UsersDAO getInstance() {
 		return INSTANCE;
 	}
 	
+	/**
+	 * lists all users
+	 * 
+	 * @return List<Users>
+	 */
 	@Override
 	public List<Users> list() throws SQLException {
 		List<Users> users = new ArrayList<Users>();
@@ -52,6 +65,12 @@ public class UsersDAO extends FogsDatabase implements DatabaseAccessObject<Users
 		return users;
 	}
 
+	/**
+	 * gets specific user
+	 * 
+	 * @param data
+	 * @return Users
+	 */
 	@Override
 	public Users get(Users data) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(READ_USERS_FOR_ID_CMD);
@@ -72,6 +91,11 @@ public class UsersDAO extends FogsDatabase implements DatabaseAccessObject<Users
 		return u;
 	}
 
+	/**
+	 * inserts new user
+	 * 
+	 * @param data
+	 */
 	@Override
 	public void insert(Users data) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(INSERT_USERS_CMD);
@@ -81,6 +105,12 @@ public class UsersDAO extends FogsDatabase implements DatabaseAccessObject<Users
 		stmt.close();
 	}
 
+	/**
+	 * updates existing users data
+	 * 
+	 * @param oldData
+	 * @param newData
+	 */
 	@Override
 	public void update(Users oldData, Users newData) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(UPDATE_USERS_CMD);
@@ -91,6 +121,11 @@ public class UsersDAO extends FogsDatabase implements DatabaseAccessObject<Users
 		stmt.close();
 	}
 
+	/**
+	 * deletes user
+	 * 
+	 * @param data
+	 */
 	@Override
 	public void delete(Users data) throws SQLException {
 		PreparedStatement stmt = con.prepareStatement(DELETE_USERS_CMD);
