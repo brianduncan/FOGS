@@ -1,4 +1,4 @@
 FOGS
 ====
 
-CMPE207 Project - Facebook Open Graph Service
+CMPE297 Fall 2012 Project - Facebook Open Graph Service
